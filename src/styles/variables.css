@@ -1,0 +1,22 @@
+:root {
+  --bg: #f7f8fb;
+  --bg2: #e9edf5;
+  --surface: #ffffff;
+  --ink: #1a3668;
+  --ink2: #4a5b7a;
+  --ink3: #8a96b0;
+  --navy: #1a3668;
+  --navy2: #25478a;
+  --deep: #0e2248;
+  --brand-soft: #e8eef8;
+  --accent: #f1a80b;
+  --accent2: #e09800;
+  --accent-soft: #fff6e0;
+  --border: rgba(26, 54, 104, 0.1);
+  --border2: rgba(26, 54, 104, 0.16);
+  --danger: #dc4a42;
+  --success: #15803d;
+  --shadow: 0 20px 50px rgba(8, 20, 48, 0.28);
+  --font-sans: "Nunito", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}

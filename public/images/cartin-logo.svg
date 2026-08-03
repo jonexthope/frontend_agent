@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 174" role="img" aria-label="Cartin">
+  <rect width="620" height="174" rx="24" fill="#ffffff"/>
+  <text x="48" y="112" font-family="Nunito, Arial, sans-serif" font-size="92" font-weight="800" fill="#1A3668" letter-spacing="-2">cart</text>
+  <g transform="translate(268 42)">
+    <path d="M8 10h14l10 48h52l12-34H40" fill="none" stroke="#F1A80B" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="62" cy="74" r="8" fill="#F1A80B"/>
+    <circle cx="92" cy="74" r="8" fill="#F1A80B"/>
+  </g>
+  <text x="400" y="112" font-family="Nunito, Arial, sans-serif" font-size="92" font-weight="800" fill="#1A3668" letter-spacing="-2">in</text>
+</svg>

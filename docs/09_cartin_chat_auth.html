@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartin AI — Connexion & demande d'accès</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F7F8FB;--bg2:#E9EDF5;--surface:#FFFFFF;
+  --ink:#1A3668;--ink2:#4A5B7A;--ink3:#8A96B0;
+  --navy:#1A3668;--navy2:#25478A;--deep:#0E2248;
+  --brand-soft:#E8EEF8;--accent:#F1A80B;--accent2:#E09800;--accent-soft:#FFF6E0;
+  --border:rgba(26,54,104,0.1);--border2:rgba(26,54,104,0.16);
+  --danger:#DC4A42;--success:#15803D;
+  --shadow:0 20px 50px rgba(8,20,48,0.28);
+}
+html,body{height:100%}
+body{
+  font-family:'Nunito',sans-serif;color:var(--ink);height:100vh;overflow:hidden;
+  display:grid;grid-template-columns:minmax(0,0.88fr) minmax(440px,1.12fr);
+  background:var(--bg);
+}
+
+.hero{
+  position:relative;isolation:isolate;overflow:hidden;height:100vh;
+  padding:36px 40px 32px;display:flex;flex-direction:column;justify-content:space-between;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%,rgba(241,168,11,0.22),transparent 50%),
+    radial-gradient(ellipse 70% 55% at 90% 90%,rgba(70,120,200,0.35),transparent 55%),
+    linear-gradient(160deg,#081530 0%,var(--deep) 28%,var(--navy) 62%,#2E5AA8 100%);
+  color:#fff;
+}
+.hero-grid{
+  position:absolute;inset:0;z-index:0;opacity:.14;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.28) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.28) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse 75% 70% at 40% 40%,#000 20%,transparent 75%);
+}
+.hero-glow{
+  position:absolute;width:480px;height:480px;border-radius:50%;right:-120px;bottom:-160px;
+  pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(241,168,11,0.28),transparent 68%);
+  animation:drift 12s ease-in-out infinite alternate;
+}
+.hero-glow2{
+  position:absolute;width:320px;height:320px;border-radius:50%;left:-80px;top:20%;
+  pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(90,140,220,0.25),transparent 70%);
+  animation:drift 14s ease-in-out infinite alternate-reverse;
+}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(-28px,-18px)}}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+.brand-mark{
+  position:relative;z-index:1;display:inline-flex;align-items:center;padding:10px 14px;
+  background:#fff;border-radius:14px;box-shadow:0 10px 28px rgba(0,0,0,.22);width:fit-content;
+  animation:rise .6s ease both;
+}
+.brand-mark img{display:block;width:124px;height:auto}
+.brand-line{
+  position:relative;z-index:1;margin-top:12px;font-size:10px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55);
+  animation:rise .6s .08s ease both;
+}
+
+.hero-mid{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;min-height:0}
+.hero-mid h1{
+  font-size:clamp(28px,3.4vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.12;
+  animation:rise .7s .12s ease both;max-width:540px;
+}
+.hero-mid h1 em{font-style:normal;color:var(--accent)}
+.hero-mid .lead{
+  font-size:15px;line-height:1.55;color:rgba(255,255,255,.76);font-weight:600;
+  max-width:460px;animation:rise .7s .18s ease both;
+}
+
+.chat-preview{
+  max-width:480px;border-radius:18px;padding:16px;background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(14px);
+  box-shadow:0 16px 40px rgba(0,0,0,.18);
+  animation:rise .75s .25s ease both,float 7s ease-in-out infinite;
+  display:flex;flex-direction:column;gap:10px;
+}
+.bubble-row{display:flex;gap:8px;align-items:flex-end}
+.bubble-row.me{justify-content:flex-end}
+.mini-av{
+  width:26px;height:26px;border-radius:8px;background:linear-gradient(145deg,#16305e,#3a6bc0);
+  border:1.5px solid var(--accent);color:#fff;font-size:8px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.mini-bubble{
+  max-width:85%;padding:10px 13px;border-radius:14px;font-size:12.5px;font-weight:650;line-height:1.4;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.12);
+}
+.bubble-row.me .mini-bubble{background:rgba(241,168,11,.22);border-color:rgba(241,168,11,.35)}
+.typing{display:inline-flex;gap:4px;padding:2px 0}
+.typing i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.75);animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}
+.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+.hero-bot{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:8px;animation:rise .7s .32s ease both}
+.pill{
+  padding:8px 12px;border-radius:999px;font-size:11px;font-weight:700;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.92);
+  backdrop-filter:blur(6px);
+}
+
+/* Panel droit — privilégié (formulaire) */
+.panel{
+  position:relative;isolation:isolate;height:100vh;overflow:auto;
+  display:flex;align-items:center;justify-content:center;padding:40px 36px;
+  background:
+    radial-gradient(ellipse 70% 50% at 100% 0%,rgba(241,168,11,0.1),transparent 55%),
+    radial-gradient(ellipse 60% 45% at 0% 100%,rgba(26,54,104,0.06),transparent 50%),
+    linear-gradient(180deg,#F4F7FC 0%,#EEF2F9 100%);
+  border-left:1px solid rgba(26,54,104,0.08);
+}
+.panel::before,.panel::after{display:none}
+.card{
+  position:relative;z-index:1;width:100%;max-width:440px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:22px;padding:32px 30px 28px;
+  box-shadow:0 16px 48px rgba(26,54,104,0.12);
+  animation:rise .55s ease both;
+}
+.card-badge{
+  display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;
+  padding:5px 10px;border-radius:999px;background:var(--brand-soft);
+  font-size:10px;font-weight:800;color:var(--navy);letter-spacing:.04em;text-transform:uppercase;
+}
+.card-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--success)}
+.card-logo{display:none;margin-bottom:16px}
+.card-logo img{width:110px;height:auto}
+.card h2{font-size:24px;font-weight:800;color:var(--navy);letter-spacing:-.02em;margin-bottom:6px}
+.card .sub{font-size:13.5px;color:var(--ink2);font-weight:600;margin-bottom:20px;line-height:1.45}
+
+.tabs{display:flex;gap:6px;padding:4px;background:linear-gradient(180deg,#E8EEF8,#E0E8F4);border-radius:12px;margin-bottom:18px}
+.tab{
+  flex:1;padding:9px 10px;border:none;border-radius:9px;background:transparent;
+  font-family:inherit;font-size:12.5px;font-weight:800;color:var(--ink2);cursor:pointer;transition:all .15s;
+}
+.tab.on{background:#fff;color:var(--navy);box-shadow:0 2px 8px rgba(26,54,104,.12)}
+
+.form{display:none}
+.form.on{display:block}
+.form-row{margin-bottom:12px}
+.form-row label{display:block;font-size:11px;font-weight:800;color:var(--ink2);margin-bottom:5px}
+.form-row input,.form-row select,.form-row textarea{
+  width:100%;padding:11px 13px;border:1px solid var(--border2);border-radius:10px;
+  font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink);background:#F3F6FB;outline:none;
+}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{
+  border-color:var(--accent);box-shadow:0 0 0 3px rgba(241,168,11,.14);background:#fff;
+}
+.form-row textarea{min-height:84px;resize:vertical}
+.row-between{display:flex;align-items:center;justify-content:space-between;margin:4px 0 14px;font-size:12px;font-weight:650}
+.row-between a{color:var(--navy);text-decoration:none;font-weight:800}
+.row-between a:hover{color:var(--accent2)}
+.check{display:flex;align-items:center;gap:7px;color:var(--ink2);cursor:pointer}
+.check input{accent-color:var(--navy)}
+
+.btn{
+  width:100%;padding:12px 16px;border-radius:11px;border:1px solid var(--border2);
+  font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;transition:all .15s;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-color:var(--navy);margin-top:4px;
+  box-shadow:0 6px 16px rgba(26,54,104,.28);
+}
+.btn-primary:hover{background:linear-gradient(135deg,var(--navy2),#2F5CA0);transform:translateY(-1px)}
+.btn-google{
+  margin-top:10px;background:var(--surface);color:var(--ink2);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-google:hover{border-color:var(--navy);color:var(--navy);background:var(--brand-soft)}
+.btn-google svg{width:16px;height:16px}
+
+.divider{
+  display:flex;align-items:center;gap:10px;margin:14px 0 4px;
+  font-size:11px;font-weight:700;color:var(--ink3);
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.err{
+  display:none;margin-bottom:12px;padding:9px 12px;border-radius:9px;
+  background:#FCEBEB;color:#A32D2D;font-size:12px;font-weight:700;
+}
+.err.on{display:block}
+.ok{
+  display:none;margin-bottom:12px;padding:9px 12px;border-radius:9px;
+  background:#E1F5EE;color:var(--success);font-size:12px;font-weight:700;
+}
+.ok.on{display:block}
+
+.foot{margin-top:16px;text-align:center;font-size:11.5px;color:var(--ink3);font-weight:600}
+.foot a{color:var(--navy);font-weight:800;text-decoration:none}
+.foot a:hover{color:var(--accent2)}
+
+@media(max-width:960px){
+  body{grid-template-columns:1fr;overflow:auto}
+  .hero{display:none}
+  .panel{height:auto;min-height:100vh;padding:28px 16px;border-left:none}
+  .card-logo{display:block}
+  .card{max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<section class="hero" aria-hidden="false">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div>
+    <div class="brand-mark"><img src="cartin-logo.png" alt="Cartin"></div>
+    <div class="brand-line">Assistant conversationnel · Cartin AI</div>
+  </div>
+
+  <div class="hero-mid">
+    <h1>Discutez avec vos <em>données Cartin</em></h1>
+    <p class="lead">Connectez-vous pour poser vos questions sur le CA, les pays, les clients et la logistique — dans une interface type ChatGPT.</p>
+
+    <div class="chat-preview">
+      <div class="bubble-row me">
+        <div class="mini-bubble">Quel est le CA HT ce mois vs M-1 ?</div>
+      </div>
+      <div class="bubble-row">
+        <div class="mini-av">AI</div>
+        <div class="mini-bubble">CA HT 36,33 M€ · ▲ 3,3% vs M-1. La croissance est tirée par La Réunion et Maurice.</div>
+      </div>
+      <div class="bubble-row">
+        <div class="mini-av">AI</div>
+        <div class="mini-bubble"><span class="typing"><i></i><i></i><i></i></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-bot">
+    <span class="pill">Brief exécutif</span>
+    <span class="pill">Alertes pays</span>
+    <span class="pill">RFM &amp; clients</span>
+    <span class="pill">Données live</span>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="card">
+    <div class="card-logo"><img src="cartin-logo.png" alt="Cartin"></div>
+    <div class="card-badge"><span class="dot"></span> Accès Cartin AI</div>
+    <h2 id="cardTitle">Connexion</h2>
+    <p class="sub" id="cardSub">Accédez à Cartin AI, votre assistant business.</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tab on" id="tab-login" onclick="showAuth('login')">Se connecter</button>
+      <button class="tab" id="tab-access" onclick="showAuth('access')">Demander un accès</button>
+    </div>
+
+    <div class="err" id="errBox"></div>
+    <div class="ok" id="okBox"></div>
+
+    <form class="form on" id="form-login" onsubmit="return submitLogin(event)">
+      <div class="form-row">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" autocomplete="email" placeholder="prenom.nom@cartin.com" required>
+      </div>
+      <div class="form-row">
+        <label for="loginPass">Mot de passe</label>
+        <input id="loginPass" type="password" autocomplete="current-password" placeholder="••••••••" required>
+      </div>
+      <div class="row-between">
+        <label class="check"><input type="checkbox" id="remember" checked> Se souvenir</label>
+        <a href="#" onclick="event.preventDefault();flashOk('Lien de réinitialisation envoyé (démo)')">Mot de passe oublié ?</a>
+      </div>
+      <button class="btn btn-primary" type="submit">Entrer dans Cartin AI</button>
+      <div class="divider">ou</div>
+      <button class="btn btn-google" type="button" onclick="loginGoogle()">
+        <svg viewBox="0 0 16 16"><path fill="#4285F4" d="M15.7 8.2c0-.5-.05-1.1-.14-1.6H8v3h4.3c-.18 1-.75 1.85-1.6 2.42v2h2.6C14.9 12.6 15.7 10.6 15.7 8.2z"/><path fill="#34A853" d="M8 16c2.16 0 3.98-.72 5.3-1.94l-2.6-2c-.72.48-1.64.76-2.7.76-2.08 0-3.84-1.4-4.47-3.3H.85v2.07C2.16 14.2 4.88 16 8 16z"/><path fill="#FBBC05" d="M3.53 9.52A4.8 4.8 0 013.26 8c0-.53.1-1.04.27-1.52V4.41H.85A8 8 0 000 8c0 1.29.31 2.51.85 3.59l2.68-2.07z"/><path fill="#EA4335" d="M8 3.18c1.18 0 2.24.4 3.07 1.2l2.3-2.3C11.97.8 10.16 0 8 0 4.88 0 2.16 1.8.85 4.41l2.68 2.07C4.16 4.58 5.92 3.18 8 3.18z"/></svg>
+        Continuer avec Google
+      </button>
+    </form>
+
+    <form class="form" id="form-access" onsubmit="return submitAccess(event)">
+      <div class="form-row">
+        <label for="accEmail">Email professionnel</label>
+        <input id="accEmail" type="email" autocomplete="email" placeholder="prenom.nom@entreprise.com" required>
+      </div>
+      <div class="form-row">
+        <label for="accRole">Rôle souhaité</label>
+        <select id="accRole" required>
+          <option value="">Sélectionner…</option>
+          <option>Analyste</option>
+          <option>Direction</option>
+          <option>Ops / Logistique</option>
+          <option>Lecture seule</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="accMsg">Message aux administrateurs</label>
+        <textarea id="accMsg" placeholder="Pourquoi avez-vous besoin de Cartin AI ? (équipe, cas d’usage…)" required></textarea>
+      </div>
+      <button class="btn btn-primary" type="submit">Envoyer la demande</button>
+      <p style="margin-top:12px;font-size:11.5px;color:var(--ink3);font-weight:600;line-height:1.45;text-align:center">
+        Un administrateur validera votre accès. Vous recevrez un email une fois approuvé.
+      </p>
+    </form>
+
+    <div class="foot">
+      Accès réservé aux utilisateurs validés ·
+      <a href="08_cartin_chat_agent.html" onclick="return demoSkip(event)">Démo sans compte</a>
+    </div>
+  </div>
+</section>
+
+<script>
+const AUTH_KEY='cartin_ai_auth';
+const ACCESS_KEY='cartin_ai_access_requests';
+const CHAT_URL='08_cartin_chat_agent.html';
+
+function showAuth(mode){
+  document.getElementById('tab-login').classList.toggle('on',mode==='login');
+  document.getElementById('tab-access').classList.toggle('on',mode==='access');
+  document.getElementById('form-login').classList.toggle('on',mode==='login');
+  document.getElementById('form-access').classList.toggle('on',mode==='access');
+  document.getElementById('cardTitle').textContent=mode==='login'?'Connexion':'Demander un accès';
+  document.getElementById('cardSub').textContent=mode==='login'
+    ?'Accédez à Cartin AI, votre assistant business.'
+    :'Votre demande sera examinée par un administrateur Cartin.';
+  clearFlash();
+}
+
+function clearFlash(){
+  document.getElementById('errBox').classList.remove('on');
+  document.getElementById('okBox').classList.remove('on');
+}
+function flashErr(msg){
+  const e=document.getElementById('errBox');
+  const o=document.getElementById('okBox');
+  o.classList.remove('on');
+  e.textContent=msg;e.classList.add('on');
+}
+function flashOk(msg){
+  const e=document.getElementById('errBox');
+  const o=document.getElementById('okBox');
+  e.classList.remove('on');
+  o.textContent=msg;o.classList.add('on');
+}
+
+function encodeSession(user){
+  try{
+    return btoa(unescape(encodeURIComponent(JSON.stringify({...user,at:Date.now()}))));
+  }catch(e){
+    return '';
+  }
+}
+
+function saveSession(user){
+  const payload={...user,at:Date.now()};
+  try{localStorage.setItem(AUTH_KEY,JSON.stringify(payload))}catch(e){}
+  return payload;
+}
+
+function goChat(user){
+  const payload=user||{};
+  const token=encodeSession(payload);
+  location.href=token ? (CHAT_URL+'?s='+encodeURIComponent(token)) : CHAT_URL;
+}
+
+function submitLogin(e){
+  e.preventDefault();
+  clearFlash();
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass){flashErr('Email et mot de passe requis');return false}
+  if(pass.length<4){flashErr('Mot de passe trop court (min. 4 caractères)');return false}
+  const name=email.split('@')[0].replace(/[._]/g,' ');
+  const display=name.replace(/\b\w/g,c=>c.toUpperCase());
+  const user=saveSession({email,name:display,initials:initials(display),provider:'email'});
+  flashOk('Connexion réussie…');
+  setTimeout(()=>goChat(user),300);
+  return false;
+}
+
+function submitAccess(e){
+  e.preventDefault();
+  clearFlash();
+  const email=document.getElementById('accEmail').value.trim();
+  const role=document.getElementById('accRole').value;
+  const message=document.getElementById('accMsg').value.trim();
+  if(!email||!role||!message){flashErr('Tous les champs sont requis');return false}
+  let list=[];
+  try{list=JSON.parse(localStorage.getItem(ACCESS_KEY)||'[]')}catch(err){}
+  if(list.some(r=>r.email===email&&r.status!=='refused')){
+    flashErr('Une demande est déjà en cours pour cet email');
+    return false;
+  }
+  list.push({
+    id:'ai_'+Date.now(),
+    email,role,message,
+    product:'Cartin AI',
+    status:'pending',
+    at:new Date().toISOString()
+  });
+  try{localStorage.setItem(ACCESS_KEY,JSON.stringify(list))}catch(err){}
+  document.getElementById('form-access').reset();
+  flashOk('Demande envoyée aux administrateurs. Vous serez notifié après validation.');
+  return false;
+}
+
+function loginGoogle(){
+  clearFlash();
+  const user=saveSession({
+    email:'sophie.rault@cartin.com',
+    name:'Sophie Rault',
+    initials:'SR',
+    provider:'google'
+  });
+  flashOk('Connexion Google réussie…');
+  setTimeout(()=>goChat(user),300);
+}
+
+function initials(name){
+  return (name||'?').split(/\s+/).map(p=>p[0]||'').join('').slice(0,2).toUpperCase()||'AI';
+}
+
+function demoSkip(e){
+  e.preventDefault();
+  const user=saveSession({email:'demo@cartin.com',name:'Démo Cartin',initials:'DC',provider:'demo'});
+  goChat(user);
+  return false;
+}
+
+// Déjà connecté (http:// même origine) → chat, sauf si on force le login
+try{
+  const params=new URLSearchParams(location.search);
+  if(params.get('logout')==='1'){
+    localStorage.removeItem(AUTH_KEY);
+    history.replaceState(null,'',location.pathname.split('/').pop()||'09_cartin_chat_auth.html');
+  }else{
+    const s=JSON.parse(localStorage.getItem(AUTH_KEY)||'null');
+    if(s&&s.email&&location.protocol!=='file:') goChat(s);
+  }
+}catch(err){}
+</script>
+</body>
+</html>
