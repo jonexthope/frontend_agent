@@ -1,5 +1,8 @@
 # Journal technique — cartin_ai_frontend
 
+### 2026-08-04
+Intégration UI complète de `/chat` depuis le template agent : architecture chat modulaire (components/hooks/models/services/mocks/constants/utils), route `/chat` active sans fake auth/token, tests unitaires/intégration chat ajoutés, documentation architecture/README/contrat chat mise à jour pour préparer le branchement API ultérieur.
+
 ### 2026-08-03
 Alignement du point d’entrée avec `agent_cartin` : `main.tsx` et `App.tsx` remontés à la racine (comme `main.py`), hors de `src/`.
 

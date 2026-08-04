@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "@/styles/global.css";
 import "@/styles/auth.css";
+import "@/styles/chat.css";
 
 const rootElement = document.getElementById("root");
 

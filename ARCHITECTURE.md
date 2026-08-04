@@ -1,6 +1,6 @@
 # Architecture — cartin_ai_frontend
 
-Frontend React/TypeScript pour Cartin AI. Organisation calquée sur le backend `agent_cartin` : `main.tsx` / `App.tsx` et `routers/` à la racine, couches métier dans `src/` (`configs`, `models`, `schemas`, `services`, `tools`), tests `unit` / `api` / `integration`, docs vivantes.
+Frontend React/TypeScript pour Cartin AI. Organisation calquée sur le backend `agent_cartin` : `main.tsx` / `App.tsx` et `routers/` à la racine, couches métier dans `src/` (`configs`, `models`, `schemas`, `services`, `tools`), UI découpée par domaine (`auth`, `chat`), tests `unit` / `api` / `integration`, docs vivantes.
 
 ## Structure (miroir backend)
 
@@ -18,16 +18,19 @@ agent_cartin/                       cartin_ai_frontend/
 │   ├── services/                   │   ├── services/
 │   │   └── persistence/            │   │   └── api/
 │   └── tools/                      │   ├── tools/
+│                                   │   ├── constants/
+│                                   │   ├── mocks/
 │                                   │   ├── components/   # UI React
 │                                   │   ├── pages/
 │                                   │   ├── layouts/
 │                                   │   ├── hooks/
+│                                   │   ├── utils/
 │                                   │   ├── styles/
 │                                   │   └── assets/
 ├── tests/                          ├── tests/
-│   ├── unit/{domain}/              │   ├── unit/{auth,schemas,tools}/
+│   ├── unit/{domain}/              │   ├── unit/{auth,chat,schemas,tools}/
 │   ├── api/                        │   ├── api/auth/
-│   └── integration/                │   └── integration/auth/
+│   └── integration/                │   └── integration/{auth,chat}/
 ├── docs/                           ├── docs/
 ├── ARCHITECTURE.md                 ├── ARCHITECTURE.md
 ├── JOURNAL.md                      ├── JOURNAL.md
@@ -43,17 +46,21 @@ cartin_ai_frontend/
 ├── routers/                      # équivalent routers/ FastAPI
 ├── src/
 │   ├── configs/                  # app, api, routes, auth (flags + messages)
-│   ├── models/                   # auth.ts, access_request.ts
+│   ├── models/                   # auth.ts, access_request.ts, chat/*
 │   ├── schemas/                  # login.ts, access_request.ts (Zod)
 │   ├── services/
 │   │   ├── api/                  # api_client, api_error
 │   │   ├── auth_service.ts
-│   │   └── access_request_service.ts
+│   │   ├── access_request_service.ts
+│   │   └── chat/chat-ui.service.ts (mock local)
 │   ├── tools/                    # helpers purs (ex-utils)
-│   ├── components/{auth,common}/
-│   ├── pages/auth/
+│   ├── constants/chat.constants.ts
+│   ├── mocks/{chat,conversations,user}.mock.ts
+│   ├── components/{auth,chat,common}/
+│   ├── pages/{auth,chat}/
 │   ├── layouts/
-│   ├── hooks/auth/
+│   ├── hooks/{auth,chat}/
+│   ├── utils/chat/
 │   ├── styles/
 │   └── assets/
 ├── tests/{unit,api,integration}/
@@ -75,6 +82,8 @@ cartin_ai_frontend/
 | `src/schemas` | `src/schemas` | Validation Zod |
 | `src/services` | `src/services` | HTTP métier via `api_client` |
 | `src/tools` | `src/tools` | Utilitaires sans effet de bord |
+| `src/constants` | — | Constantes UI/domain (suggestions, textes) |
+| `src/mocks` | — | Données locales de démonstration |
 | `components/pages/layouts/hooks` | — | Couche UI React (spécifique frontend) |
 | `tests` | `tests` | unit / api / integration |
 
@@ -95,6 +104,19 @@ AuthPage (mode=access) → AccessRequestForm → useAccessRequest
   → FeatureUnavailableError tant que l’API n’existe pas
 ```
 
+## Flux chat local (étape UI)
+
+```text
+ChatPage → useLocalChat + useChatComposer + useSidebar
+  → chat-ui.service (mock delay/réponse)
+  → mocks/chat.mock
+  → MessageList / MessageBubble / TypingIndicator
+```
+
+- Aucune requête API n'est envoyée dans cette étape.
+- Aucune session locale d'authentification n'est créée pour `/chat`.
+- `ProtectedRoute` est conservé comme point d'extension, sans check token fictif.
+
 ## Couche API
 
 - `services/api/api_client` (Axios) + `api_error`
@@ -103,15 +125,16 @@ AuthPage (mode=access) → AccessRequestForm → useAccessRequest
 
 ## Fonctionnalités désactivées
 
-Login réel, Google OAuth, forgot password, access requests persistées, JWT, accès `/chat` (ProtectedRoute → `/login`).
+Login réel, Google OAuth, forgot password, access requests persistées, JWT, API chat/historique/feedback branchées.
 
 ## Relation future avec FastAPI
 
 1. Activer `VITE_AUTH_API_ENABLED=true`
 2. Aligner types sur OpenAPI
 3. Session token sécurisée
-4. Remplacer `ProtectedRoute` / `external_id`
-5. Rediriger `/login` → `/chat`
+4. Brancher `POST /chat`, `/conversations`, `/interactions`, feedback
+5. Remplacer `ProtectedRoute` / `external_id`
+6. Rediriger `/login` → `/chat`
 
 ## Design
 

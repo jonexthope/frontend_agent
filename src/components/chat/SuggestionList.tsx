@@ -1,0 +1,21 @@
+import { CHAT_SUGGESTIONS } from "@/constants/chat.constants";
+import { SuggestionCard } from "@/components/chat/SuggestionCard";
+
+interface SuggestionListProps {
+  onSelect: (question: string) => void;
+}
+
+export function SuggestionList({ onSelect }: SuggestionListProps) {
+  return (
+    <div className="chat-suggestions">
+      {CHAT_SUGGESTIONS.map((suggestion) => (
+        <SuggestionCard
+          key={suggestion.title}
+          title={suggestion.title}
+          description={suggestion.description}
+          onSelect={onSelect}
+        />
+      ))}
+    </div>
+  );
+}

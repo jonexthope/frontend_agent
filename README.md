@@ -1,6 +1,6 @@
 # Cartin AI — Frontend
 
-Interface React/TypeScript pour Cartin AI. **Statut actuel** : page de connexion et de demande d’accès (`/login`) prête côté UI ; authentification backend **non disponible**.
+Interface React/TypeScript pour Cartin AI. **Statut actuel** : pages `/login` et `/chat` intégrées côté UI ; authentification backend et API chat **non connectées**.
 
 ## Prérequis
 
@@ -34,7 +34,10 @@ Laisser `VITE_AUTH_API_ENABLED=false` tant que `/auth/*` n’existe pas sur le b
 npm run dev
 ```
 
-Ouvrir `http://localhost:5173/login`.
+Ouvrir :
+
+- `http://localhost:5173/login`
+- `http://localhost:5173/chat`
 
 ## Tests
 
@@ -63,6 +66,19 @@ npm run preview
 
 Voir `ARCHITECTURE.md`. Maquettes HTML de référence dans `docs/`.
 
+## Chat — état actuel
+
+| Fonctionnalité | Statut |
+|---|---|
+| UI chat complète (`/chat`) | ✅ |
+| Sidebar + historique local + profil mock | ✅ |
+| Suggestions + composer + typing indicator | ✅ |
+| Responsive desktop/mobile | ✅ |
+| Appel réel `POST /chat` | ❌ prochaine étape |
+| Historique backend (`/conversations`, `/interactions`) | ❌ prochaine étape |
+| Feedback backend | ❌ prochaine étape |
+| Session/auth backend dans le chat | ❌ prochaine étape |
+
 ## Authentification — statut
 
 | Fonctionnalité | Statut |
@@ -72,5 +88,5 @@ Voir `ARCHITECTURE.md`. Maquettes HTML de référence dans `docs/`.
 | Validation Zod | ✅ |
 | Services HTTP isolés | ✅ (désactivés par flag) |
 | Login réel / JWT / Google | ❌ backend absent |
-| Redirection `/chat` | ❌ après auth réelle |
+| Redirection `/chat` après login réel | ❌ après auth réelle |
 | Session locale simulée | ❌ volontairement absente |
