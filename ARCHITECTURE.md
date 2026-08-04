@@ -1,12 +1,12 @@
 # Architecture — cartin_ai_frontend
 
-Frontend React/TypeScript pour Cartin AI. Organisation calquée sur le backend `agent_ia_cartin` : `routers/` à la racine, couches métier dans `src/` (`configs`, `models`, `schemas`, `services`, `tools`), tests `unit` / `api` / `integration`, docs vivantes.
+Frontend React/TypeScript pour Cartin AI. Organisation calquée sur le backend `agent_cartin` : `main.tsx` / `App.tsx` et `routers/` à la racine, couches métier dans `src/` (`configs`, `models`, `schemas`, `services`, `tools`), tests `unit` / `api` / `integration`, docs vivantes.
 
 ## Structure (miroir backend)
 
 ```text
-agent_ia_cartin/                    cartin_ai_frontend/
-├── main.py                         ├── src/main.tsx · App.tsx
+agent_cartin/                       cartin_ai_frontend/
+├── main.py                         ├── main.tsx · App.tsx
 ├── routers/                        ├── routers/
 │   ├── chat.py                     │   ├── AppRouter.tsx
 │   └── history.py                  │   ├── PublicRoute.tsx
@@ -38,6 +38,8 @@ agent_ia_cartin/                    cartin_ai_frontend/
 
 ```text
 cartin_ai_frontend/
+├── main.tsx                      # point d’entrée (équivalent main.py)
+├── App.tsx                       # assemblage BrowserRouter + AppRouter
 ├── routers/                      # équivalent routers/ FastAPI
 ├── src/
 │   ├── configs/                  # app, api, routes, auth (flags + messages)
@@ -66,6 +68,7 @@ cartin_ai_frontend/
 
 | Dossier | Équivalent backend | Rôle |
 |---|---|---|
+| `main.tsx` / `App.tsx` | `main.py` | Entrée app + montage des routers |
 | `routers/` | `routers/` | Déclaration des routes frontend |
 | `src/configs` | `src/configs` | Config pure, feature flags |
 | `src/models` | `src/models` | Types / contrats TS |

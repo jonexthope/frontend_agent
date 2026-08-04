@@ -1,6 +1,9 @@
 # Journal technique — cartin_ai_frontend
 
 ### 2026-08-03
+Alignement du point d’entrée avec `agent_cartin` : `main.tsx` et `App.tsx` remontés à la racine (comme `main.py`), hors de `src/`.
+
+### 2026-08-03
 Suppression du dossier `template/` (doublon des maquettes HTML déjà présentes dans `docs/`).
 
 ### 2026-08-03
