@@ -26,9 +26,12 @@ export function useChatComposer({ onSubmitMessage }: UseChatComposerArgs) {
   const submit = useCallback(async () => {
     const trimmed = value.trim();
     if (!trimmed) return;
-    await onSubmitMessage(trimmed);
     clear();
-    focus();
+    try {
+      await onSubmitMessage(trimmed);
+    } finally {
+      focus();
+    }
   }, [clear, focus, onSubmitMessage, value]);
 
   const onKeyDown = useCallback(

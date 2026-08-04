@@ -1,14 +1,33 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
-import { CONVERSATIONS_MOCK } from "@/mocks/conversations.mock";
+import type { Conversation } from "@/models/chat/conversation.models";
+
+const CONVERSATIONS: Conversation[] = [
+  {
+    id: "c1",
+    title: "Nouvelle conversation",
+    messages: [],
+    status: "active",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "c2",
+    title: "Top 3 pays à risque",
+    messages: [],
+    status: "active",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
 
 describe("ConversationSidebar", () => {
   it("opens menu class when isOpen", () => {
     const { container } = render(
       <ConversationSidebar
-        conversations={CONVERSATIONS_MOCK}
-        activeConversationId={CONVERSATIONS_MOCK[0].id}
+        conversations={CONVERSATIONS}
+        activeConversationId={CONVERSATIONS[0].id}
         isOpen
         onNewConversation={() => undefined}
         onSelectConversation={() => undefined}
@@ -22,14 +41,14 @@ describe("ConversationSidebar", () => {
     const onSelectConversation = vi.fn();
     render(
       <ConversationSidebar
-        conversations={CONVERSATIONS_MOCK}
-        activeConversationId={CONVERSATIONS_MOCK[0].id}
+        conversations={CONVERSATIONS}
+        activeConversationId={CONVERSATIONS[0].id}
         onNewConversation={() => undefined}
         onSelectConversation={onSelectConversation}
         onLogout={() => undefined}
       />,
     );
-    fireEvent.click(screen.getByText(CONVERSATIONS_MOCK[1].title));
-    expect(onSelectConversation).toHaveBeenCalledWith(CONVERSATIONS_MOCK[1].id);
+    fireEvent.click(screen.getByText(CONVERSATIONS[1].title));
+    expect(onSelectConversation).toHaveBeenCalledWith(CONVERSATIONS[1].id);
   });
 });

@@ -3,9 +3,10 @@ import { SuggestionCard } from "@/components/chat/SuggestionCard";
 
 interface SuggestionListProps {
   onSelect: (question: string) => void;
+  disabled?: boolean;
 }
 
-export function SuggestionList({ onSelect }: SuggestionListProps) {
+export function SuggestionList({ onSelect, disabled = false }: SuggestionListProps) {
   return (
     <div className="chat-suggestions">
       {CHAT_SUGGESTIONS.map((suggestion) => (
@@ -14,6 +15,7 @@ export function SuggestionList({ onSelect }: SuggestionListProps) {
           title={suggestion.title}
           description={suggestion.description}
           onSelect={onSelect}
+          disabled={disabled}
         />
       ))}
     </div>

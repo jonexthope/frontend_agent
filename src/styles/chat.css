@@ -458,6 +458,46 @@
   background: var(--bg);
 }
 
+.chat-msg--error .chat-body {
+  opacity: 0.85;
+}
+
+.chat-msg-error {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chat-msg-error p {
+  margin: 0;
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.chat-retry-btn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.chat-retry-btn:hover {
+  background: var(--brand-soft);
+}
+
+.chat-sug:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .chat-typing {
   display: inline-flex;
   gap: 4px;

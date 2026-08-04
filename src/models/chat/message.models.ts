@@ -8,4 +8,6 @@ export interface ChatMessage {
   content: string;
   createdAt: string;
   status: MessageStatus;
+  interactionId?: string;
+  originalQuestion?: string;
 }

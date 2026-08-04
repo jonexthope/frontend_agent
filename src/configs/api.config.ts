@@ -1,8 +1,14 @@
-const rawTimeout = Number(import.meta.env.VITE_API_TIMEOUT_MS);
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+if (!baseUrl) {
+  throw new Error("VITE_API_BASE_URL n'est pas configurée");
+}
+
+const timeoutValue = Number(import.meta.env.VITE_API_TIMEOUT_MS ?? 60_000);
 
 export const API_CONFIG = {
-  baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000",
-  timeoutMs: Number.isFinite(rawTimeout) && rawTimeout > 0 ? rawTimeout : 15_000,
+  baseUrl: String(baseUrl).replace(/\/+$/, ""),
+  timeoutMs: Number.isFinite(timeoutValue) && timeoutValue > 0 ? timeoutValue : 60_000,
   defaultHeaders: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -16,4 +22,8 @@ export const AUTH_ENDPOINTS = {
   googleLogin: "/auth/google",
   forgotPassword: "/auth/forgot-password",
   accessRequest: "/access-requests",
+} as const;
+
+export const CHAT_ENDPOINTS = {
+  chat: "/chat",
 } as const;

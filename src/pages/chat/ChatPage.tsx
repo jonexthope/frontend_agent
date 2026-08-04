@@ -4,38 +4,47 @@ import { ConversationSidebar } from "@/components/chat/ConversationSidebar";
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { MessageList } from "@/components/chat/MessageList";
 import { ChatComposer } from "@/components/chat/ChatComposer";
-import { useLocalChat } from "@/hooks/chat/useLocalChat";
+import { useChat } from "@/hooks/chat/useChat";
 import { useChatComposer } from "@/hooks/chat/useChatComposer";
 import { useSidebar } from "@/hooks/chat/useSidebar";
-import { useConversationSelection } from "@/hooks/chat/useConversationSelection";
+import type { Conversation } from "@/models/chat/conversation.models";
 
 export function ChatPage() {
   const [shareInfo, setShareInfo] = useState<string | null>(null);
   const {
-    conversations,
-    activeConversationId,
-    isTyping,
-    createConversation,
-    selectConversation,
-    submitUserMessage,
-  } = useLocalChat();
-  const {
-    isSidebarOpen,
-    openSidebar,
-    closeSidebar,
-    closeOnMobile,
-  } = useSidebar();
-  const { activeConversation, onSelectConversation } = useConversationSelection(
-    conversations,
-    activeConversationId,
-    selectConversation,
-  );
+    messages,
+    sessionId,
+    isSending,
+    error,
+    sendMessage,
+    retryMessage,
+    startNewConversation,
+    clearError,
+  } = useChat();
+  const { isSidebarOpen, openSidebar, closeSidebar, closeOnMobile } = useSidebar();
 
   const composer = useChatComposer({
     onSubmitMessage: async (message) => {
-      await submitUserMessage(message);
+      await sendMessage(message);
     },
   });
+
+  const conversations = useMemo<Conversation[]>(() => {
+    if (!sessionId && messages.length === 0) return [];
+    const title =
+      messages.find((message) => message.role === "user")?.content.slice(0, 42) ||
+      "Conversation en cours";
+    return [
+      {
+        id: sessionId ?? "pending",
+        title: title.length > 42 ? `${title}…` : title,
+        messages,
+        status: "active",
+        createdAt: messages[0]?.createdAt ?? new Date().toISOString(),
+        updatedAt: messages[messages.length - 1]?.createdAt ?? new Date().toISOString(),
+      },
+    ];
+  }, [messages, sessionId]);
 
   const canShare = typeof window !== "undefined";
 
@@ -46,28 +55,18 @@ export function ChatPage() {
     setTimeout(() => setShareInfo(null), 1400);
   };
 
-  const handleSelectConversation = (id: string) => {
-    onSelectConversation(id);
-    closeOnMobile();
-  };
-
   const handleNewConversation = () => {
-    createConversation();
+    startNewConversation();
+    clearError();
     composer.focus();
     closeOnMobile();
   };
 
   const handleSuggestion = async (question: string) => {
-    composer.setValue(question);
-    await submitUserMessage(question);
-    composer.setValue("");
+    if (isSending) return;
+    await sendMessage(question);
     composer.focus();
   };
-
-  const messageCount = useMemo(
-    () => activeConversation?.messages.length ?? 0,
-    [activeConversation?.messages.length],
-  );
 
   return (
     <ChatLayout
@@ -76,18 +75,24 @@ export function ChatPage() {
       sidebar={
         <ConversationSidebar
           conversations={conversations}
-          activeConversationId={activeConversationId}
+          activeConversationId={sessionId ?? "pending"}
           isOpen={isSidebarOpen}
           onNewConversation={handleNewConversation}
-          onSelectConversation={handleSelectConversation}
+          onSelectConversation={() => closeOnMobile()}
           onLogout={() => setShareInfo("Authentification non connectée")}
         />
       }
-      header={<ChatHeader onOpenSidebar={openSidebar} onShare={() => void handleShare()} canShare={canShare} />}
+      header={
+        <ChatHeader
+          onOpenSidebar={openSidebar}
+          onShare={() => void handleShare()}
+          canShare={canShare}
+        />
+      }
       composer={
         <ChatComposer
           value={composer.value}
-          isBusy={isTyping}
+          isBusy={isSending}
           liveDataEnabled={composer.liveDataEnabled}
           analysisEnabled={composer.analysisEnabled}
           textareaRef={composer.textareaRef}
@@ -100,12 +105,18 @@ export function ChatPage() {
       }
     >
       <MessageList
-        messages={activeConversation?.messages ?? []}
-        isBusy={isTyping}
+        messages={messages}
+        isSending={isSending}
+        suggestionsDisabled={isSending}
         onSelectSuggestion={(question) => void handleSuggestion(question)}
+        onRetryMessage={(messageId) => void retryMessage(messageId)}
       />
+      {error ? (
+        <div className="chat-toast" role="alert">
+          {error}
+        </div>
+      ) : null}
       {shareInfo ? <div className="chat-toast">{shareInfo}</div> : null}
-      <span className="sr-only">{messageCount} messages</span>
     </ChatLayout>
   );
 }

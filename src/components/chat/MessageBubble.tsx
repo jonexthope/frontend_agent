@@ -1,7 +1,6 @@
 import type { ChatMessage } from "@/models/chat/message.models";
 import { CHAT_USER_MOCK } from "@/mocks/user.mock";
 import { MessageActions } from "@/components/chat/MessageActions";
-import { TypingIndicator } from "@/components/chat/TypingIndicator";
 import {
   formatMessageContent,
   type InlinePart,
@@ -9,6 +8,7 @@ import {
 
 interface MessageBubbleProps {
   message: ChatMessage;
+  onRetry?: (messageId: string) => void;
 }
 
 function renderInlineText(parts: InlinePart[]) {
@@ -19,44 +19,63 @@ function renderInlineText(parts: InlinePart[]) {
   });
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ message, onRetry }: MessageBubbleProps) {
   const isUser = message.role === "user";
   const who = isUser ? "Vous" : "Cartin AI";
   const blocks = formatMessageContent(message.content);
+  const hasError = message.status === "error";
 
   return (
-    <article className={`chat-msg ${isUser ? "user" : "bot"}`}>
-      {isUser ? <div className="chat-av-user">{CHAT_USER_MOCK.initials}</div> : <div className="chat-av-bot">AI</div>}
+    <article
+      className={`chat-msg ${isUser ? "user" : "bot"}${hasError ? " chat-msg--error" : ""}`}
+      aria-live={isUser ? undefined : "polite"}
+    >
+      {isUser ? (
+        <div className="chat-av-user">{CHAT_USER_MOCK.initials}</div>
+      ) : (
+        <div className="chat-av-bot">AI</div>
+      )}
       <div className="chat-bubble">
         <div className="chat-who">{who}</div>
         <div className="chat-body">
-          {message.status === "sending" ? (
-            <TypingIndicator />
-          ) : (
-            blocks.map((block, index) => {
-              if (block.type === "kpi") {
-                const trendClass = block.trendDirection === "down" ? "down" : "";
-                return (
-                  <span key={`${block.label}_${index}`} className="chat-kpi-chip">
-                    {block.label} {block.value}
-                    {block.trend ? <em className={trendClass}>{block.trend}</em> : null}
-                  </span>
-                );
-              }
-              if (block.type === "list") {
-                return (
-                  <ul key={`list_${index}`}>
-                    {block.items.map((item, itemIndex) => (
-                      <li key={`item_${itemIndex}`}>{renderInlineText(item)}</li>
-                    ))}
-                  </ul>
-                );
-              }
-              return <p key={`p_${index}`}>{renderInlineText(block.parts)}</p>;
-            })
-          )}
+          {blocks.map((block, index) => {
+            if (block.type === "kpi") {
+              const trendClass = block.trendDirection === "down" ? "down" : "";
+              return (
+                <span key={`${block.label}_${index}`} className="chat-kpi-chip">
+                  {block.label} {block.value}
+                  {block.trend ? <em className={trendClass}>{block.trend}</em> : null}
+                </span>
+              );
+            }
+            if (block.type === "list") {
+              return (
+                <ul key={`list_${index}`}>
+                  {block.items.map((item, itemIndex) => (
+                    <li key={`item_${itemIndex}`}>{renderInlineText(item)}</li>
+                  ))}
+                </ul>
+              );
+            }
+            return <p key={`p_${index}`}>{renderInlineText(block.parts)}</p>;
+          })}
         </div>
-        {!isUser && message.status !== "sending" ? <MessageActions content={message.content} /> : null}
+        {hasError ? (
+          <div className="chat-msg-error">
+            <p>L’envoi a échoué.</p>
+            <button
+              type="button"
+              className="chat-retry-btn"
+              onClick={() => onRetry?.(message.id)}
+              aria-label="Réessayer l’envoi du message"
+            >
+              Réessayer
+            </button>
+          </div>
+        ) : null}
+        {!isUser && message.status === "sent" ? (
+          <MessageActions content={message.content} />
+        ) : null}
       </div>
     </article>
   );

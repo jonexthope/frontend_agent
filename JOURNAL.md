@@ -1,6 +1,9 @@
 # Journal technique — cartin_ai_frontend
 
 ### 2026-08-04
+Branchements chat → `POST /chat` : `chat.service`, `useChat`, `chat-identity` (`external_id` temporaire), modèles API, suppression des mocks de réponses ; CORS `localhost:5173` côté `agent_cartin` ; tests service/hook/intégration ; docs ARCHITECTURE/README/contrat mises à jour. Pas de streaming.
+
+### 2026-08-04
 Intégration UI complète de `/chat` depuis le template agent : architecture chat modulaire (components/hooks/models/services/mocks/constants/utils), route `/chat` active sans fake auth/token, tests unitaires/intégration chat ajoutés, documentation architecture/README/contrat chat mise à jour pour préparer le branchement API ultérieur.
 
 ### 2026-08-03

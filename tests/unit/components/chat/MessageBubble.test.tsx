@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import type { ChatMessage } from "@/models/chat/message.models";
 
@@ -26,5 +26,22 @@ describe("MessageBubble", () => {
     expect(screen.getByText("Cartin AI")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Copier/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Utile/i })).toBeInTheDocument();
+  });
+
+  it("shows retry on error user message", () => {
+    const onRetry = vi.fn();
+    render(
+      <MessageBubble
+        message={makeMessage({
+          role: "user",
+          content: "Question",
+          status: "error",
+          originalQuestion: "Question",
+        })}
+        onRetry={onRetry}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Réessayer/i }));
+    expect(onRetry).toHaveBeenCalledWith("m1");
   });
 });

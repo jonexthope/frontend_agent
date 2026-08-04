@@ -1,64 +1,62 @@
-# Contrat frontend chat (étape UI locale)
+# Contrat frontend chat — POST /chat
 
-Ce document décrit l'état actuel de l'interface `/chat` côté frontend, **sans appel backend**.
+Contrat UI ↔ backend FastAPI `agent_cartin` pour l’écran `/chat`.
 
-## Objectif de l'étape
+## Objectif
 
-- Intégrer l'UI complète de l'agent conversationnel depuis `docs/08_cartin_chat_agent.html`.
-- Conserver le design et les tokens visuels utilisés par la page auth.
-- Préparer une séparation claire UI locale ↔ future API.
+Remplacer le chat simulé par un appel réel à `POST /chat`, sans streaming.
 
-## Périmètre implémenté
-
-- Route `/chat` et `/chat/:conversationId`.
-- Sidebar (historique local, nouvelle conversation, profil mock).
-- Header (badge Cartin AI, bouton menu mobile, partage local).
-- Welcome screen + 4 suggestions.
-- Thread messages user/assistant.
-- Typing indicator local.
-- Composer (textarea auto-resize, Enter/Shift+Enter, toolbar live/analyse, send button).
-- Responsive desktop/mobile (sidebar overlay + backdrop).
-
-## État des données
-
-- Conversations: mocks locaux (`src/mocks/conversations.mock.ts`).
-- Réponses assistant: mocks locaux (`src/mocks/chat.mock.ts`).
-- Utilisateur: mock local (`src/mocks/user.mock.ts`).
-- Aucun stockage de session auth (`localStorage`) pour `/chat`.
-
-## Flux local actuel
+## Flux
 
 ```text
 Question utilisateur
-→ useLocalChat.submitUserMessage()
-→ ajout message user + placeholder assistant (sending)
-→ typing indicator
-→ réponse mock via chat-ui.service
-→ message assistant final (sent)
+→ useChat.sendMessage()
+→ affichage immédiat du message user + TypingIndicator
+→ chat.service.sendChatMessage()
+→ apiRequest POST /chat
+→ validation SendChatResponse
+→ session_id conservé ; interaction_id sur le message assistant
+→ affichage de answer en texte (formatage léger, pas de HTML brut)
 ```
 
-## Contrat futur avec backend (non branché ici)
+## Requête
 
-### À connecter ensuite
+```json
+{
+  "question": "string",
+  "session_id": "uuid (optionnel, uniquement si conversation existante)",
+  "external_id": "frontend-agent-temporary-user"
+}
+```
 
-- `POST /chat`
-- `GET /conversations`
-- `GET /conversations/{session_id}`
-- `PATCH /conversations/{session_id}`
-- `GET /interactions/{interaction_id}`
-- feedback endpoints
+- Première question d’une conversation : **ne pas** envoyer `session_id`.
+- Questions suivantes : réutiliser le `session_id` retourné.
+- `external_id` : valeur temporaire centralisée dans `chat-identity.service` (pas une auth).
 
-### Sortie attendue côté UI
+## Réponse
 
-`POST /chat` devra alimenter:
+```json
+{
+  "answer": "string",
+  "session_id": "uuid",
+  "interaction_id": "uuid"
+}
+```
 
-- `answer` → contenu assistant
-- `session_id` → conversation active
-- `interaction_id` → actions feedback
+## Erreurs UX
 
-## Exclusions explicites de cette étape
+| Cas | Message utilisateur |
+|---|---|
+| Réseau | Impossible de communiquer avec Cartin AI… |
+| Timeout | La réponse prend trop de temps… |
+| 404 | Cette conversation n’est plus disponible… |
+| 422 | La question envoyée n’est pas valide. |
+| 500 / 503 | Cartin AI est temporairement indisponible. |
+| Corps invalide | La réponse reçue de Cartin AI est invalide. |
 
-- Pas de JWT/OAuth.
-- Pas de persistance auth locale.
-- Pas de streaming backend réel.
-- Pas d'appels API chat/historique/feedback.
+## Hors périmètre (prochaine étape)
+
+- Historique `GET /conversations` / groupement Aujourd’hui·Hier
+- JWT / `external_id` réel
+- Feedback sur `interaction_id`
+- SSE / WebSocket / streaming
