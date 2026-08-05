@@ -12,14 +12,14 @@ vi.mock("@/services/chat/chat.service.js", () => ({
   sendChatMessage: vi.fn(),
 }));
 
-import ChatView from "@/views/chat/ChatView.vue";
+import ChatPage from "@/pages/chat/ChatPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: [{ path: "/chat", component: ChatView }],
+  routes: [{ path: "/chat", component: ChatPage }],
 });
 
-describe("ChatView integration", () => {
+describe("ChatPage integration", () => {
   beforeEach(async () => {
     setActivePinia(createPinia());
     vi.mocked(chatService.sendChatMessage).mockReset();
@@ -36,7 +36,7 @@ describe("ChatView integration", () => {
   });
 
   it("shows welcome and four suggestions", async () => {
-    const wrapper = mount(ChatView, {
+    const wrapper = mount(ChatPage, {
       global: { plugins: [createPinia(), router] },
     });
     expect(wrapper.text()).toContain("Bonjour, comment puis-je vous aider ?");
@@ -44,7 +44,7 @@ describe("ChatView integration", () => {
   });
 
   it("submits message and shows API reply", async () => {
-    const wrapper = mount(ChatView, {
+    const wrapper = mount(ChatPage, {
       global: { plugins: [createPinia(), router] },
     });
 

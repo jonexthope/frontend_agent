@@ -36,6 +36,8 @@ describe("useChatStore", () => {
       interactionId: "interaction-1",
       status: "sent",
     });
+    expect(typeof store.messages[1].durationMs).toBe("number");
+    expect(store.messages[1].durationMs).toBeGreaterThanOrEqual(0);
     expect(store.sessionId).toBe("session-1");
     expect(chatService.sendChatMessage).toHaveBeenCalledWith({
       question: "Bonjour",

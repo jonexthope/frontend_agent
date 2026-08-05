@@ -1,6 +1,12 @@
 # Journal technique — cartin_ai_frontend
 
 ### 2026-08-05
+Regroupement des écrans routés dans `src/pages/{auth,chat}` et suppression de `src/views` afin de conserver la convention `pages`.
+
+### 2026-08-05
+Affichage du temps d’exécution client sous chaque réponse IA (`durationMs` mesuré dans le store chat, rendu dans `MessageBubble`).
+
+### 2026-08-05
 Migration complète React 19/TypeScript → Vue 3/JavaScript/Pinia : stores chat/auth/ui, composables, vues `.vue`, services `.js`, tests Vitest/Vue Test Utils, suppression de tous les fichiers `.ts`/`.tsx`, build et tests OK. Connexion `POST /chat` conservée.
 
 ### 2026-08-05

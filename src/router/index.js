@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
-import AuthView from "@/views/auth/AuthView.vue";
-import ChatView from "@/views/chat/ChatView.vue";
+import AuthPage from "@/pages/auth/AuthPage.vue";
+import ChatPage from "@/pages/chat/ChatPage.vue";
 
 const routes = [
   { path: "/", redirect: "/login" },
-  { path: "/login", name: "login", component: AuthView },
-  { path: "/chat", name: "chat", component: ChatView },
+  { path: "/login", name: "login", component: AuthPage },
+  { path: "/chat", name: "chat", component: ChatPage },
   {
     path: "/chat/:conversationId",
     name: "conversation",
-    component: ChatView,
+    component: ChatPage,
     props: true,
   },
   { path: "/:pathMatch(.*)*", redirect: "/login" },

@@ -50,11 +50,13 @@ export const useChatStore = defineStore("chat", () => {
     error.value = null;
 
     try {
+      const startedAt = performance.now();
       const response = await sendChatMessage({
         question,
         external_id: getChatExternalId(),
         ...(sessionIdRef ? { session_id: sessionIdRef } : {}),
       });
+      const durationMs = Math.round(performance.now() - startedAt);
 
       sessionIdRef = response.session_id;
       sessionId.value = response.session_id;
@@ -69,6 +71,7 @@ export const useChatStore = defineStore("chat", () => {
         createdAt: new Date().toISOString(),
         status: "sent",
         interactionId: response.interaction_id,
+        durationMs,
       });
 
       return true;

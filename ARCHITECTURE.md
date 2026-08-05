@@ -15,11 +15,11 @@ src/
 ├── constants/
 ├── layouts/
 ├── mocks/
+├── pages/{auth,chat}/           # écrans routés
 ├── router/
 ├── services/{api,auth,chat,identity}/
 ├── stores/                     # état Pinia auth, chat et UI
-├── utils/
-└── views/{auth,chat}/
+└── utils/
 
 tests/
 ├── setup.js
@@ -30,7 +30,7 @@ tests/
 ## Responsabilités
 
 - `main.js` initialise Vue, Pinia, le routeur et les styles partagés.
-- `views` assemblent les écrans routés.
+- `pages` assemble les écrans routés (`AuthPage` et `ChatPage`).
 - `layouts` définissent la structure des écrans auth et chat.
 - `components` contient les composants Vue par domaine.
 - `composables` porte la logique d'interface réutilisable.
@@ -42,7 +42,7 @@ tests/
 ## Flux de connexion
 
 ```text
-AuthView → LoginForm → auth store → auth.service.login
+AuthPage → LoginForm → auth store → auth.service.login
   → FeatureUnavailableError si VITE_AUTH_API_ENABLED=false
   → sinon POST /auth/login
   → AuthFeedback
@@ -51,7 +51,7 @@ AuthView → LoginForm → auth store → auth.service.login
 ## Flux de demande d’accès
 
 ```text
-AuthView (mode=access) → AccessRequestForm
+AuthPage (mode=access) → AccessRequestForm
   → accessRequest.service.requestAccess
   → FeatureUnavailableError tant que l’API n’existe pas
 ```
@@ -59,7 +59,7 @@ AuthView (mode=access) → AccessRequestForm
 ## Flux chat → POST /chat
 
 ```text
-ChatView
+ChatPage
   → chat store (messages, sessionId, isSending, error)
   → chat.service
   → apiClient (Axios)
@@ -85,6 +85,10 @@ ChatView
 ### `interaction_id`
 
 Conservé sur le message assistant (`interactionId`) pour le futur feedback. Non utilisé pour l’instant.
+
+### Temps d’exécution affiché
+
+Le store chat mesure la durée client de `POST /chat` via `performance.now()` et la stocke sur le message assistant (`durationMs`). `MessageBubble` l’affiche sous la réponse, en secondes, pour les messages IA uniquement. La valeur inclut le réseau.
 
 ### Comportement réseau (pas de streaming)
 

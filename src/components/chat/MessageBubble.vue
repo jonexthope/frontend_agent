@@ -14,6 +14,11 @@ const isUser = computed(() => props.message.role === "user");
 const who = computed(() => (isUser.value ? "Vous" : "Cartin AI"));
 const blocks = computed(() => formatMessageContent(props.message.content));
 const hasError = computed(() => props.message.status === "error");
+const durationSeconds = computed(() => {
+  const durationMs = props.message.durationMs;
+  if (typeof durationMs !== "number" || durationMs < 0) return null;
+  return (durationMs / 1000).toFixed(1);
+});
 </script>
 
 <template>
@@ -58,6 +63,10 @@ const hasError = computed(() => props.message.status === "error");
             </template>
           </p>
         </template>
+      </div>
+
+      <div v-if="!isUser && durationSeconds !== null" class="chat-duration">
+        Temps d’exécution : {{ durationSeconds }} s
       </div>
 
       <div v-if="hasError" class="chat-msg-error">
