@@ -1,102 +1,48 @@
 # Architecture — cartin_ai_frontend
 
-Frontend React/TypeScript pour Cartin AI. Organisation calquée sur le backend `agent_cartin` : `main.tsx` / `App.tsx` et `routers/` à la racine, couches métier dans `src/` (`configs`, `models`, `schemas`, `services`, `tools`), UI découpée par domaine (`auth`, `chat`), tests `unit` / `api` / `integration`, docs vivantes.
+Frontend Vue 3/JavaScript pour Cartin AI, construit avec Vite, Vue Router et Pinia. L'ancien socle React/TypeScript a été retiré.
 
-## Structure (miroir backend)
-
-```text
-agent_cartin/                       cartin_ai_frontend/
-├── main.py                         ├── main.tsx · App.tsx
-├── routers/                        ├── routers/
-│   ├── chat.py                     │   ├── AppRouter.tsx
-│   └── history.py                  │   ├── PublicRoute.tsx
-│                                   │   └── ProtectedRoute.tsx
-├── src/                            ├── src/
-│   ├── configs/                    │   ├── configs/
-│   ├── models/                     │   ├── models/
-│   ├── schemas/                    │   ├── schemas/
-│   ├── services/                   │   ├── services/
-│   │   └── persistence/            │   │   ├── api/
-│   │                               │   │   ├── chat/
-│   │                               │   │   └── identity/
-│   └── tools/                      │   ├── tools/
-│                                   │   ├── constants/
-│                                   │   ├── mocks/          # profil UI uniquement
-│                                   │   ├── components/
-│                                   │   ├── pages/
-│                                   │   ├── layouts/
-│                                   │   ├── hooks/
-│                                   │   ├── utils/
-│                                   │   ├── styles/
-│                                   │   └── assets/
-├── tests/                          ├── tests/
-│   ├── unit/{domain}/              │   ├── unit/{auth,chat,schemas,tools}/
-│   ├── api/                        │   ├── api/auth/
-│   └── integration/                │   └── integration/{auth,chat}/
-├── docs/                           ├── docs/
-├── ARCHITECTURE.md                 ├── ARCHITECTURE.md
-├── JOURNAL.md                      ├── JOURNAL.md
-└── README.md                       └── README.md
-```
-
-## Détail
+## Structure
 
 ```text
-cartin_ai_frontend/
-├── main.tsx
-├── App.tsx
-├── routers/
-├── src/
-│   ├── configs/                  # app, api, routes, auth
-│   ├── models/                   # auth, access_request, chat/*
-│   ├── schemas/                  # login, access_request (Zod)
-│   ├── services/
-│   │   ├── api/                  # api_client (Axios), api_error
-│   │   ├── chat/
-│   │   │   ├── chat.service.ts   # seul point qui connaît POST /chat
-│   │   │   └── chat-ui.service.ts # helpers UI (titre, message user)
-│   │   ├── identity/
-│   │   │   └── chat-identity.service.ts  # external_id temporaire
-│   │   ├── auth_service.ts
-│   │   └── access_request_service.ts
-│   ├── tools/
-│   ├── constants/chat.constants.ts
-│   ├── mocks/user.mock.ts        # initiales profil UI uniquement
-│   ├── components/{auth,chat,common}/
-│   ├── pages/{auth,chat}/
-│   ├── layouts/
-│   ├── hooks/{auth,chat}/
-│   ├── utils/chat/               # erreurs, formatage texte, textarea
-│   ├── styles/
-│   └── assets/
-├── tests/{unit,api,integration}/
-├── docs/
-├── public/
-├── ARCHITECTURE.md
-├── JOURNAL.md
-└── README.md
+src/
+├── App.vue
+├── main.js
+├── assets/styles/              # styles globaux, auth et chat
+├── components/{auth,chat,common}/
+├── composables/chat/           # logique réutilisable de composition
+├── configs/                    # API, routes et constantes applicatives
+├── constants/
+├── layouts/
+├── mocks/
+├── router/
+├── services/{api,auth,chat,identity}/
+├── stores/                     # état Pinia auth, chat et UI
+├── utils/
+└── views/{auth,chat}/
+
+tests/
+├── setup.js
+├── integration/chat/
+└── unit/{components,services,stores,utils}/
 ```
 
 ## Responsabilités
 
-| Dossier | Équivalent backend | Rôle |
-|---|---|---|
-| `main.tsx` / `App.tsx` | `main.py` | Entrée app + montage des routers |
-| `routers/` | `routers/` | Déclaration des routes frontend |
-| `src/configs` | `src/configs` | Config pure, feature flags |
-| `src/models` | `src/models` | Types / contrats TS |
-| `src/schemas` | `src/schemas` | Validation Zod |
-| `src/services` | `src/services` | HTTP métier via `api_client` |
-| `src/tools` | `src/tools` | Utilitaires sans effet de bord |
-| `src/constants` | — | Constantes UI/domain (suggestions, textes) |
-| `src/mocks` | — | Données UI non métier (profil affichage) |
-| `components/pages/layouts/hooks` | — | Couche UI React |
-| `tests` | `tests` | unit / api / integration |
+- `main.js` initialise Vue, Pinia, le routeur et les styles partagés.
+- `views` assemblent les écrans routés.
+- `layouts` définissent la structure des écrans auth et chat.
+- `components` contient les composants Vue par domaine.
+- `composables` porte la logique d'interface réutilisable.
+- `stores` centralise l'état partagé avec Pinia.
+- `services` isole les appels API et la logique d'intégration.
+- `configs`, `constants`, `mocks` et `utils` restent sans dépendance UI directe.
+- Les tests Vitest sont écrits en JavaScript.
 
 ## Flux de connexion
 
 ```text
-AuthPage → LoginForm → useLogin → auth_service.login
+AuthView → LoginForm → auth store → auth.service.login
   → FeatureUnavailableError si VITE_AUTH_API_ENABLED=false
   → sinon POST /auth/login
   → AuthFeedback
@@ -105,28 +51,28 @@ AuthPage → LoginForm → useLogin → auth_service.login
 ## Flux de demande d’accès
 
 ```text
-AuthPage (mode=access) → AccessRequestForm → useAccessRequest
-  → access_request_service.requestAccess
+AuthView (mode=access) → AccessRequestForm
+  → accessRequest.service.requestAccess
   → FeatureUnavailableError tant que l’API n’existe pas
 ```
 
 ## Flux chat → POST /chat
 
 ```text
-ChatPage
-  → useChat (messages, sessionId, isSending, error)
-  → sendChatMessage (chat.service)
-  → apiRequest / apiClient (Axios)
+ChatView
+  → chat store (messages, sessionId, isSending, error)
+  → chat.service
+  → apiClient (Axios)
   → POST {VITE_API_BASE_URL}/chat
   → MessageList / MessageBubble / TypingIndicator
 ```
 
 ### Rôles
 
-- **`apiClient` / `apiRequest`** : HTTP commun (base URL, timeout, JSON, erreurs, futur Bearer token).
+- **`apiClient`** : HTTP commun (base URL, timeout, JSON, erreurs, futur Bearer token).
 - **`chat.service`** : seule couche qui connaît la route `/chat` ; valide `answer` / `session_id` / `interaction_id`.
-- **`chat-identity.service`** : centralise `external_id` temporaire (`frontend-agent-temporary-user`) ; pas une auth.
-- **`useChat`** : unique entrée UI pour envoyer, réessayer, nouvelle conversation, erreurs.
+- **`chatIdentity.service`** : centralise `external_id` temporaire (`frontend-agent-temporary-user`) ; pas une auth.
+- **Store chat** : unique entrée UI pour envoyer, réessayer, créer une conversation et gérer les erreurs.
 
 ### Gestion du `session_id`
 
@@ -158,7 +104,7 @@ Aucun faux streaming caractère par caractère.
 
 ## Couche API
 
-- `services/api/api_client` (Axios) + `api_error`
+- `services/api/apiClient.js` (Axios) + `apiError.js`
 - Config : `VITE_API_BASE_URL` (obligatoire), `VITE_API_TIMEOUT_MS` (défaut 60000)
 - Flags auth : `VITE_AUTH_API_ENABLED`, `VITE_GOOGLE_AUTH_ENABLED`
 - Contrats : `docs/frontend-api-contract.md`, `docs/frontend-chat-contract.md`
@@ -178,9 +124,9 @@ Login réel, Google OAuth, forgot password, access requests persistées, JWT, hi
 2. Aligner types sur OpenAPI
 3. Session token sécurisée
 4. Brancher `/conversations`, `/interactions`, feedback
-5. Remplacer `getChatExternalId` / `ProtectedRoute` par l’identité connectée
+5. Remplacer l’identité temporaire et la garde de route par l’identité connectée
 6. Rediriger `/login` → `/chat`
 
 ## Design
 
-Fidèle à `docs/09_cartin_chat_auth.html` et `docs/08_cartin_chat_agent.html` (navy `#1A3668`, accent `#F1A80B`, Nunito). Pas de `dangerouslySetInnerHTML` sur les réponses.
+Fidèle à `docs/09_cartin_chat_auth.html` et `docs/08_cartin_chat_agent.html` (navy `#1A3668`, accent `#F1A80B`, Nunito). Les réponses sont rendues sans HTML injecté.

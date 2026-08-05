@@ -1,5 +1,11 @@
 # Journal technique — cartin_ai_frontend
 
+### 2026-08-05
+Migration complète React 19/TypeScript → Vue 3/JavaScript/Pinia : stores chat/auth/ui, composables, vues `.vue`, services `.js`, tests Vitest/Vue Test Utils, suppression de tous les fichiers `.ts`/`.tsx`, build et tests OK. Connexion `POST /chat` conservée.
+
+### 2026-08-05
+Suppression des derniers fichiers React/TypeScript et des anciens styles afin de finaliser la migration vers Vue 3/JavaScript.
+
 ### 2026-08-04
 Branchements chat → `POST /chat` : `chat.service`, `useChat`, `chat-identity` (`external_id` temporaire), modèles API, suppression des mocks de réponses ; CORS `localhost:5173` côté `agent_cartin` ; tests service/hook/intégration ; docs ARCHITECTURE/README/contrat mises à jour. Pas de streaming.
 

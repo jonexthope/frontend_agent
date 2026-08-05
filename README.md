@@ -1,6 +1,6 @@
 # Cartin AI — Frontend
 
-Interface React/TypeScript pour Cartin AI. **Statut actuel** : page `/chat` connectée à `POST /chat` du backend FastAPI `agent_cartin` ; authentification JWT encore désactivée.
+Interface **Vue 3 + JavaScript + Pinia** pour Cartin AI. Le chat est connecté à `POST /chat` du backend FastAPI `agent_cartin`.
 
 ## Prérequis
 
@@ -23,58 +23,40 @@ VITE_API_BASE_URL=http://localhost:8000
 VITE_APP_NAME=Cartin AI
 VITE_AUTH_API_ENABLED=false
 VITE_GOOGLE_AUTH_ENABLED=false
-VITE_API_TIMEOUT_MS=60000
+VITE_API_TIMEOUT_MS=600000
 ```
 
-- `VITE_API_BASE_URL` est **obligatoire** (jamais hardcodé dans les composants).
-- `VITE_API_TIMEOUT_MS` : délai Axios (défaut 60000 ms pour les réponses chat longues).
-- Laisser `VITE_AUTH_API_ENABLED=false` tant que `/auth/*` n’existe pas.
-
-## Lancement du backend (`agent_cartin`)
-
-Depuis le dépôt backend :
+## Lancement
 
 ```bash
-# selon le README du backend, typiquement :
+# backend
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
 
-Swagger : [http://localhost:8000/docs](http://localhost:8000/docs)  
-OpenAPI : [http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)
-
-### CORS
-
-Le backend autorise l’origine Vite de développement `http://localhost:5173` via `CORSMiddleware`. Sans cela, le navigateur bloquera les appels `POST /chat`.
-
-## Lancement du frontend
-
-```bash
+# frontend
 npm run dev
 ```
 
-Ouvrir :
-
+- `http://localhost:5173/login` — connexion / demande d’accès (UI)
 - `http://localhost:5173/chat` — agent conversationnel (API réelle)
-- `http://localhost:5173/login` — UI auth (API désactivée)
 
-## Procédure de test manuelle
+Swagger : http://localhost:8000/docs
 
-1. Démarrer `agent_cartin` sur le port 8000.
-2. Démarrer le frontend (`npm run dev`).
-3. Ouvrir `/chat`, poser une question.
-4. Vérifier l’apparition immédiate du message user, le typing indicator, puis la réponse backend.
-5. Poser une deuxième question : le même `session_id` doit être réutilisé (visible dans l’onglet Network).
-6. Cliquer « Nouvelle conversation » puis reposer une question : pas de `session_id` sur le premier nouvel appel.
-7. Tester Swagger `POST /chat` en parallèle si besoin.
+## Stack
 
-## Tests automatisés
+- Vue 3 (Composition API, `<script setup>`)
+- Pinia (stores `auth`, `chat`, `ui`)
+- Vue Router
+- Vite
+- Axios
+- Vitest + Vue Test Utils
+
+## Tests
 
 Exécuter les suites **séparément** :
 
 ```bash
 npm run test:unit
 npm run test:integration
-npm run test:api
 ```
 
 ## Build
@@ -84,32 +66,15 @@ npm run build
 npm run preview
 ```
 
-## Organisation
+## Architecture
 
-Voir `ARCHITECTURE.md`. Contrat chat : `docs/frontend-chat-contract.md`.
+Voir `ARCHITECTURE.md` et `docs/frontend-chat-contract.md`.
 
-## Chat — état actuel
-
-| Fonctionnalité | Statut |
-|---|---|
-| UI chat complète (`/chat`) | ✅ |
-| `POST /chat` réel (Axios) | ✅ |
-| Conservation `session_id` / `interaction_id` | ✅ |
-| Suggestions → même flux API | ✅ |
-| Erreurs réseau / HTTP / timeout | ✅ |
-| Typing indicator (sans faux streaming) | ✅ |
-| `external_id` temporaire centralisé | ✅ |
-| Historique backend (`/conversations`) | ❌ prochaine étape |
-| Feedback backend | ❌ prochaine étape |
-| JWT / profil utilisateur dynamique | ❌ prochaine étape |
-
-## Authentification — statut
+## État fonctionnel
 
 | Fonctionnalité | Statut |
 |---|---|
-| UI connexion | ✅ |
-| UI demande d’accès | ✅ |
-| Validation Zod | ✅ |
-| Services HTTP isolés | ✅ (désactivés par flag) |
-| Login réel / JWT / Google | ❌ backend absent |
-| Remplacement de `external_id` | ❌ après auth réelle |
+| UI chat + `POST /chat` | ✅ |
+| `session_id` / `interaction_id` | ✅ |
+| UI auth (sans JWT réel) | ✅ |
+| Historique backend | ❌ prochaine étape |
