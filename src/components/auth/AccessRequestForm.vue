@@ -5,7 +5,7 @@ import AppSelect from "@/components/common/AppSelect.vue";
 import AppTextarea from "@/components/common/AppTextarea.vue";
 import AppButton from "@/components/common/AppButton.vue";
 import { ACCESS_ROLES } from "@/configs/auth.constants";
-import { validateAccessRequest } from "@/utils/validation";
+import { validateAccessRequest } from "@/tools/validation";
 
 const props = defineProps({
   isSubmitting: { type: Boolean, default: false },

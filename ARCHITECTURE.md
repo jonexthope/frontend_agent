@@ -8,7 +8,7 @@ Frontend Vue 3/JavaScript pour Cartin AI, construit avec Vite, Vue Router et Pin
 src/
 ├── App.vue
 ├── main.js
-├── assets/styles/              # styles globaux, auth et chat
+├── assets/styles/              # unique emplacement des styles applicatifs
 ├── components/{auth,chat,common}/
 ├── composables/chat/           # logique réutilisable de composition
 ├── configs/                    # API, routes et constantes applicatives
@@ -19,25 +19,29 @@ src/
 ├── router/
 ├── services/{api,auth,chat,identity}/
 ├── stores/                     # état Pinia auth, chat et UI
-└── utils/
+└── tools/                      # helpers purs (validation, erreurs, formatage)
 
 tests/
 ├── setup.js
 ├── integration/chat/
-└── unit/{components,services,stores,utils}/
+└── unit/{components,services,stores,tools}/
 ```
 
 ## Responsabilités
 
 - `main.js` initialise Vue, Pinia, le routeur et les styles partagés.
 - `pages` assemble les écrans routés (`AuthPage` et `ChatPage`).
+- `router/index.js` est l’unique routeur et réutilise `configs/routes.config.js`.
 - `layouts` définissent la structure des écrans auth et chat.
 - `components` contient les composants Vue par domaine.
 - `composables` porte la logique d'interface réutilisable.
 - `stores` centralise l'état partagé avec Pinia.
 - `services` isole les appels API et la logique d'intégration.
-- `configs`, `constants`, `mocks` et `utils` restent sans dépendance UI directe.
+- `configs`, `constants`, `mocks` et `tools` restent sans dépendance UI directe.
 - Les tests Vitest sont écrits en JavaScript.
+- Les assets servis directement sont dans `public`; le logo applicatif utilise
+  `public/images/cartin-logo.svg`. Le PNG des templates reste uniquement dans
+  `docs/cartin-logo.png`.
 
 ## Flux de connexion
 

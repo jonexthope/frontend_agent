@@ -6,7 +6,7 @@ import {
   requestPasswordReset,
 } from "@/services/auth/auth.service";
 import { requestAccess } from "@/services/auth/accessRequest.service";
-import { toAuthErrorMessage } from "@/utils/authErrors";
+import { toAuthErrorMessage } from "@/tools/authErrors";
 
 export const useAuthStore = defineStore("auth", () => {
   const isSubmitting = ref(false);

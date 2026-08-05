@@ -1,6 +1,12 @@
 # Journal technique — cartin_ai_frontend
 
 ### 2026-08-05
+Nettoyage global de l’arborescence : suppression des dossiers React/tests vides, conservation de `src/router` comme routeur unique et de `src/assets/styles` comme emplacement CSS unique, suppression de `AppLoader`, du favicon ICO et de `@pinia/testing` non utilisés, déduplication du logo PNG, retrait du script API sans tests et centralisation des routes via `routes.config.js`.
+
+### 2026-08-05
+Helpers déplacés de `src/utils` vers `src/tools` (convention préférée) ; dossier `utils` et sous-dossiers `tools` vides supprimés ; imports et tests mis à jour.
+
+### 2026-08-05
 Regroupement des écrans routés dans `src/pages/{auth,chat}` et suppression de `src/views` afin de conserver la convention `pages`.
 
 ### 2026-08-05

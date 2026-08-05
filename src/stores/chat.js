@@ -2,7 +2,7 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { sendChatMessage } from "@/services/chat/chat.service";
 import { getChatExternalId } from "@/services/identity/chatIdentity.service";
-import { getChatErrorMessage } from "@/utils/chatErrors";
+import { getChatErrorMessage } from "@/tools/chatErrors";
 
 function createId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {

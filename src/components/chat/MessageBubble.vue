@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { CHAT_USER_MOCK } from "@/mocks/user.mock.js";
-import { formatMessageContent } from "@/utils/messageFormat.js";
+import { formatMessageContent } from "@/tools/messageFormat.js";
 import MessageActions from "@/components/chat/MessageActions.vue";
 
 const props = defineProps({

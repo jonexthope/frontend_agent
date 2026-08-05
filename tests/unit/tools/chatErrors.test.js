@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getChatErrorMessage } from "@/utils/chatErrors.js";
+import { getChatErrorMessage } from "@/tools/chatErrors.js";
 import { ApiError, NetworkError } from "@/services/api/apiError.js";
 
 describe("getChatErrorMessage", () => {

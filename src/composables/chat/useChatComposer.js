@@ -1,5 +1,5 @@
 import { nextTick, ref } from "vue";
-import { autoResizeTextarea } from "@/utils/textarea.js";
+import { autoResizeTextarea } from "@/tools/textarea.js";
 
 export function useChatComposer(onSubmitMessage) {
   const message = ref("");

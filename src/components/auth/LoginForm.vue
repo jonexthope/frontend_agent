@@ -4,7 +4,7 @@ import AppInput from "@/components/common/AppInput.vue";
 import AppButton from "@/components/common/AppButton.vue";
 import PasswordInput from "@/components/auth/PasswordInput.vue";
 import GoogleLoginButton from "@/components/auth/GoogleLoginButton.vue";
-import { validateLogin } from "@/utils/validation";
+import { validateLogin } from "@/tools/validation";
 
 defineProps({
   isSubmitting: { type: Boolean, default: false },

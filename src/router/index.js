@@ -1,18 +1,19 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { APP_ROUTES } from "@/configs/routes.config.js";
 import AuthPage from "@/pages/auth/AuthPage.vue";
 import ChatPage from "@/pages/chat/ChatPage.vue";
 
 const routes = [
-  { path: "/", redirect: "/login" },
-  { path: "/login", name: "login", component: AuthPage },
-  { path: "/chat", name: "chat", component: ChatPage },
+  { path: "/", redirect: APP_ROUTES.login },
+  { path: APP_ROUTES.login, name: "login", component: AuthPage },
+  { path: APP_ROUTES.chat, name: "chat", component: ChatPage },
   {
-    path: "/chat/:conversationId",
+    path: APP_ROUTES.chatConversation,
     name: "conversation",
     component: ChatPage,
     props: true,
   },
-  { path: "/:pathMatch(.*)*", redirect: "/login" },
+  { path: "/:pathMatch(.*)*", redirect: APP_ROUTES.login },
 ];
 
 const router = createRouter({
