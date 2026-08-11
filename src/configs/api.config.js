@@ -29,4 +29,7 @@ export const AUTH_ENDPOINTS = {
 
 export const CHAT_ENDPOINTS = {
   chat: "/chat",
+  conversations: "/conversations",
+  conversation: (sessionId) =>
+    `/conversations/${encodeURIComponent(sessionId)}`,
 };

@@ -1,5 +1,11 @@
 # Journal technique — cartin_ai_frontend
 
+### 2026-08-11
+Sidebar historique enrichie : menu `⋯` par conversation, confirmation de suppression, suppression logique via `PATCH /conversations/{session_id}` (`status=archived`) avec retrait local immédiat et reset du chat si conversation active ; UI des lignes de conversation rendue plus compacte ; fallback liste `title=null` → `Conversation` et enrichissement local depuis la première question lors de l’ouverture ; tests unit/intégration mis à jour.
+
+### 2026-08-11
+Historique sidebar branché sur `GET /conversations` : `history.service.js`, store `history.js`, `conversationPeriods.js` (Aujourd’hui / Hier / Cette semaine, lundi + dimanche), chargement détail au clic via `chat.loadConversation` (sync `sessionId`/`sessionIdRef`), refresh après `POST /chat` orchestré dans `ChatPage`, tests unit/intégration OK.
+
 ### 2026-08-05
 Nettoyage global de l’arborescence : suppression des dossiers React/tests vides, conservation de `src/router` comme routeur unique et de `src/assets/styles` comme emplacement CSS unique, suppression de `AppLoader`, du favicon ICO et de `@pinia/testing` non utilisés, déduplication du logo PNG, retrait du script API sans tests et centralisation des routes via `routes.config.js`.
 

@@ -5,9 +5,10 @@ defineProps({
   label: { type: String, required: true },
   conversations: { type: Array, required: true },
   activeConversationId: { type: String, required: true },
+  deletingConversationId: { type: String, default: null },
 });
 
-defineEmits(["select-conversation"]);
+defineEmits(["select-conversation", "request-delete"]);
 </script>
 
 <template>
@@ -17,6 +18,8 @@ defineEmits(["select-conversation"]);
     :key="conversation.id"
     :conversation="conversation"
     :active="conversation.id === activeConversationId"
+    :deleting="conversation.id === deletingConversationId"
     @select="$emit('select-conversation', $event)"
+    @request-delete="$emit('request-delete', $event)"
   />
 </template>

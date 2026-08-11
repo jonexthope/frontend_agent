@@ -5,12 +5,22 @@ import ConversationHistory from "@/components/chat/ConversationHistory.vue";
 import UserProfile from "@/components/chat/UserProfile.vue";
 
 defineProps({
-  conversations: { type: Array, required: true },
-  activeConversationId: { type: String, required: true },
+  groups: { type: Object, required: true },
+  activeConversationId: { type: String, default: null },
   isOpen: { type: Boolean, default: false },
+  isLoading: { type: Boolean, default: false },
+  isLoadingConversation: { type: Boolean, default: false },
+  deletingConversationId: { type: String, default: null },
+  error: { type: String, default: null },
 });
 
-defineEmits(["new-conversation", "select-conversation", "logout"]);
+defineEmits([
+  "new-conversation",
+  "select-conversation",
+  "delete-conversation",
+  "retry-history",
+  "logout",
+]);
 </script>
 
 <template>
@@ -21,9 +31,15 @@ defineEmits(["new-conversation", "select-conversation", "logout"]);
     </div>
     <NewConversationButton @click="$emit('new-conversation')" />
     <ConversationHistory
-      :conversations="conversations"
+      :groups="groups"
       :active-conversation-id="activeConversationId"
+      :is-loading="isLoading"
+      :is-loading-conversation="isLoadingConversation"
+      :deleting-conversation-id="deletingConversationId"
+      :error="error"
       @select-conversation="$emit('select-conversation', $event)"
+      @delete-conversation="$emit('delete-conversation', $event)"
+      @retry="$emit('retry-history')"
     />
     <UserProfile @logout="$emit('logout')" />
   </aside>

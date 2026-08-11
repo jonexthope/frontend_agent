@@ -113,4 +113,37 @@ describe("useChatStore", () => {
     });
     await vi.waitFor(() => expect(store.isSending).toBe(false));
   });
+
+  it("loadConversation syncs sessionId and reuses it on sendMessage", async () => {
+    vi.mocked(chatService.sendChatMessage).mockResolvedValue({
+      answer: "suite",
+      session_id: "hist-A",
+      interaction_id: "i-new",
+    });
+
+    const store = useChatStore();
+    store.loadConversation({
+      sessionId: "hist-A",
+      messages: [
+        {
+          id: "question-i1",
+          role: "user",
+          content: "Ancienne question",
+          createdAt: "2026-08-03T09:30:00Z",
+          status: "sent",
+        },
+      ],
+    });
+
+    expect(store.sessionId).toBe("hist-A");
+    expect(store.messages).toHaveLength(1);
+
+    await store.sendMessage("Nouvelle question");
+
+    expect(chatService.sendChatMessage).toHaveBeenCalledWith({
+      question: "Nouvelle question",
+      session_id: "hist-A",
+      external_id: "frontend-agent-temporary-user",
+    });
+  });
 });

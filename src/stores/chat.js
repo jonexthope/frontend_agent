@@ -32,6 +32,15 @@ export const useChatStore = defineStore("chat", () => {
     isSending.value = false;
   }
 
+  function loadConversation({ sessionId: loadedSessionId, messages: loadedMessages }) {
+    const nextSessionId = loadedSessionId ? String(loadedSessionId) : null;
+    sessionIdRef = nextSessionId;
+    sessionId.value = nextSessionId;
+    messages.value = Array.isArray(loadedMessages) ? [...loadedMessages] : [];
+    error.value = null;
+    isSending.value = false;
+  }
+
   async function sendMessage(rawQuestion) {
     const question = String(rawQuestion ?? "").trim();
     if (!question || isSending.value) return false;
@@ -102,6 +111,7 @@ export const useChatStore = defineStore("chat", () => {
     sendMessage,
     retryMessage,
     startNewConversation,
+    loadConversation,
     clearError,
   };
 });

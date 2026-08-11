@@ -44,7 +44,7 @@ Swagger : http://localhost:8000/docs
 ## Stack
 
 - Vue 3 (Composition API, `<script setup>`)
-- Pinia (stores `auth`, `chat`, `ui`)
+- Pinia (stores `auth`, `chat`, `history`, `ui`)
 - Vue Router
 - Vite
 - Axios
@@ -76,5 +76,6 @@ Voir `ARCHITECTURE.md` et `docs/frontend-chat-contract.md`.
 |---|---|
 | UI chat + `POST /chat` | ✅ |
 | `session_id` / `interaction_id` | ✅ |
+| Historique `/conversations` (Aujourd’hui / Hier / Cette semaine) | ✅ |
 | UI auth (sans JWT réel) | ✅ |
-| Historique backend | ❌ prochaine étape |
+| Feedback / JWT / streaming | ❌ hors périmètre actuel |

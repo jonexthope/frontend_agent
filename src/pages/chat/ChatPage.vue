@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import ChatLayout from "@/layouts/ChatLayout.vue";
 import ConversationSidebar from "@/components/chat/ConversationSidebar.vue";
@@ -7,16 +7,36 @@ import ChatHeader from "@/components/chat/ChatHeader.vue";
 import MessageList from "@/components/chat/MessageList.vue";
 import ChatComposer from "@/components/chat/ChatComposer.vue";
 import { useChatStore } from "@/stores/chat.js";
+import { useHistoryStore } from "@/stores/history.js";
 import { useUiStore } from "@/stores/ui.js";
 import { useChatComposer } from "@/composables/chat/useChatComposer.js";
 
 const chatStore = useChatStore();
+const historyStore = useHistoryStore();
 const uiStore = useUiStore();
 
-const { messages, sessionId, isSending, error } = storeToRefs(chatStore);
+const { messages, isSending, error } = storeToRefs(chatStore);
+const {
+  groupedConversations,
+  selectedConversationId,
+  isLoadingHistory,
+  isLoadingConversation,
+  deletingConversationId,
+  error: historyError,
+} = storeToRefs(historyStore);
 const { isSidebarOpen } = storeToRefs(uiStore);
 
 const shareInfo = ref(null);
+
+async function handleSend(question) {
+  const success = await chatStore.sendMessage(question);
+  if (!success) return;
+
+  await historyStore.refreshHistory();
+  if (chatStore.sessionId) {
+    historyStore.setSelectedConversationId(chatStore.sessionId);
+  }
+}
 
 const {
   message,
@@ -29,27 +49,13 @@ const {
   toggleLiveData,
   toggleAnalysis,
   focus,
-} = useChatComposer((question) => chatStore.sendMessage(question));
-
-const conversations = computed(() => {
-  if (!sessionId.value && messages.value.length === 0) return [];
-  const firstUser = messages.value.find((message) => message.role === "user");
-  const title = firstUser?.content.slice(0, 42) || "Conversation en cours";
-  return [
-    {
-      id: sessionId.value ?? "pending",
-      title: title.length > 42 ? `${title}…` : title,
-      messages: messages.value,
-      status: "active",
-      createdAt: messages.value[0]?.createdAt ?? new Date().toISOString(),
-      updatedAt:
-        messages.value[messages.value.length - 1]?.createdAt ??
-        new Date().toISOString(),
-    },
-  ];
-});
+} = useChatComposer(handleSend);
 
 const canShare = typeof window !== "undefined";
+
+onMounted(() => {
+  void historyStore.loadHistory();
+});
 
 async function handleShare() {
   if (!canShare) return;
@@ -62,14 +68,25 @@ async function handleShare() {
 
 function handleNewConversation() {
   chatStore.startNewConversation();
+  historyStore.clearSelection();
   chatStore.clearError();
   focus();
   uiStore.closeOnMobile();
 }
 
+async function handleSelectConversation(sessionId) {
+  const ok = await historyStore.selectConversation(sessionId);
+  if (ok) uiStore.closeOnMobile();
+}
+
+async function handleDeleteConversation(sessionId) {
+  const ok = await historyStore.deleteConversation(sessionId);
+  if (ok) uiStore.closeOnMobile();
+}
+
 async function handleSuggestion(question) {
   if (isSending.value) return;
-  await chatStore.sendMessage(question);
+  await handleSend(question);
   focus();
 }
 </script>
@@ -78,11 +95,17 @@ async function handleSuggestion(question) {
   <ChatLayout :is-sidebar-open="isSidebarOpen" @close-sidebar="uiStore.closeSidebar">
     <template #sidebar>
       <ConversationSidebar
-        :conversations="conversations"
-        :active-conversation-id="sessionId ?? 'pending'"
+        :groups="groupedConversations"
+        :active-conversation-id="selectedConversationId"
         :is-open="isSidebarOpen"
+        :is-loading="isLoadingHistory"
+        :is-loading-conversation="isLoadingConversation"
+        :deleting-conversation-id="deletingConversationId"
+        :error="historyError"
         @new-conversation="handleNewConversation"
-        @select-conversation="uiStore.closeOnMobile"
+        @select-conversation="handleSelectConversation"
+        @delete-conversation="handleDeleteConversation"
+        @retry-history="historyStore.loadHistory"
         @logout="shareInfo = 'Authentification non connectée'"
       />
     </template>
@@ -98,7 +121,7 @@ async function handleSuggestion(question) {
     <MessageList
       :messages="messages"
       :is-sending="isSending"
-      :suggestions-disabled="isSending"
+      :suggestions-disabled="isSending || isLoadingConversation"
       @select-suggestion="handleSuggestion"
       @retry="chatStore.retryMessage"
     />
@@ -109,7 +132,7 @@ async function handleSuggestion(question) {
     <template #composer>
       <ChatComposer
         v-model="message"
-        :is-sending="isSending"
+        :is-sending="isSending || isLoadingConversation"
         :live-data-enabled="liveDataEnabled"
         :analysis-enabled="analysisEnabled"
         :textarea-ref="textareaRef"
