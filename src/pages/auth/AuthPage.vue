@@ -27,11 +27,23 @@ function handleModeChange(nextMode) {
 }
 
 async function handleLogin(values) {
-  await authStore.submitLogin(values);
-}
+  const loggedIn = await authStore.submitLogin(values);
 
-async function handleGoogleLogin() {
-  await authStore.submitGoogleLogin();
+  if (!loggedIn) {
+    return;
+  }
+
+  const redirect =
+    typeof route.query.redirect === "string"
+      ? route.query.redirect
+      : null;
+
+  if (redirect) {
+    await router.push(redirect);
+    return;
+  }
+
+  await router.push({ name: "chat" });
 }
 
 async function handleForgotPassword(email) {

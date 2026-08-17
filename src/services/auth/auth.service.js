@@ -12,13 +12,13 @@ function assertAuthEnabled(message) {
 
 export async function login(payload) {
   assertAuthEnabled(AUTH_MESSAGES.loginUnavailable);
+
   return apiRequest({
     method: "POST",
     url: AUTH_ENDPOINTS.login,
     data: {
       email: payload.email,
       password: payload.password,
-      remember: payload.remember,
     },
   });
 }
@@ -39,5 +39,26 @@ export async function requestPasswordReset(email) {
     method: "POST",
     url: AUTH_ENDPOINTS.forgotPassword,
     data: { email },
+  });
+}
+
+export async function getCurrentUser() {
+  assertAuthEnabled(AUTH_MESSAGES.loginUnavailable);
+
+  return apiRequest({
+    method: "GET",
+    url: AUTH_ENDPOINTS.currentUser,
+  });
+}
+
+export async function refreshSession(refreshToken) {
+  assertAuthEnabled(AUTH_MESSAGES.loginUnavailable);
+
+  return apiRequest({
+    method: "POST",
+    url: AUTH_ENDPOINTS.refresh,
+    data: {
+      refresh_token: refreshToken,
+    },
   });
 }
