@@ -4,11 +4,15 @@ import {
   getCurrentUser,
   login,
   loginWithGoogle,
+  logoutSession,
   refreshSession,
   requestPasswordReset,
 } from "@/services/auth/auth.service";
 import { requestAccess } from "@/services/auth/accessRequest.service";
-import { setAuthTokenProvider } from "@/services/api/apiClient";
+import {
+  setAuthRefreshHandler,
+  setAuthTokenProvider,
+} from "@/services/api/apiClient";
 import {
   saveAuthSession,
   loadAuthSession,
@@ -34,7 +38,7 @@ export const useAuthStore = defineStore("auth", () => {
   );
 
   setAuthTokenProvider(() => accessToken.value);
-
+  setAuthRefreshHandler(() => refreshAccessToken());
   function clearFeedback() {
     error.value = null;
     success.value = null;
@@ -58,6 +62,50 @@ export const useAuthStore = defineStore("auth", () => {
     remember.value = false;
 
     clearStoredAuthSession();
+  }
+
+  async function refreshAccessToken() {
+    if (!refreshToken.value) {
+      clearSession();
+      return false;
+    }
+  
+    const shouldRemember = remember.value;
+  
+    try {
+      const response = await refreshSession(refreshToken.value);
+  
+      setSession(response, shouldRemember);
+  
+      return true;
+    } catch (err) {
+      if (err?.status === 401 || err?.status === 403) {
+        clearSession();
+      }
+  
+      return false;
+    }
+  }
+
+  async function submitLogout() {
+    const currentRefreshToken = refreshToken.value;
+  
+    clearFeedback();
+  
+    try {
+      if (currentRefreshToken) {
+        await logoutSession(currentRefreshToken);
+      }
+  
+      return true;
+    } catch (err) {
+      error.value = toAuthErrorMessage(err);
+      return false;
+    } finally {
+      // On déconnecte toujours localement l'utilisateur,
+      // même si le serveur est momentanément inaccessible.
+      clearSession();
+    }
   }
 
   async function restoreSession() {
@@ -193,8 +241,10 @@ export const useAuthStore = defineStore("auth", () => {
     clearSession,
     restoreSession,
     submitLogin,
+    submitLogout,
     submitGoogleLogin,
     submitPasswordReset,
     submitAccessRequest,
+    refreshAccessToken,
   };
 });

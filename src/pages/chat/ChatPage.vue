@@ -10,10 +10,14 @@ import { useChatStore } from "@/stores/chat.js";
 import { useHistoryStore } from "@/stores/history.js";
 import { useUiStore } from "@/stores/ui.js";
 import { useChatComposer } from "@/composables/chat/useChatComposer.js";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth.js";
 
 const chatStore = useChatStore();
 const historyStore = useHistoryStore();
 const uiStore = useUiStore();
+const router = useRouter();
+const authStore = useAuthStore();
 
 const { messages, isSending, error } = storeToRefs(chatStore);
 const {
@@ -56,6 +60,15 @@ const canShare = typeof window !== "undefined";
 onMounted(() => {
   void historyStore.loadHistory();
 });
+
+async function handleLogout() {
+  await authStore.submitLogout();
+
+  chatStore.startNewConversation();
+  historyStore.clearSelection();
+
+  await router.push({ name: "login" });
+}
 
 async function handleShare() {
   if (!canShare) return;
@@ -106,7 +119,7 @@ async function handleSuggestion(question) {
         @select-conversation="handleSelectConversation"
         @delete-conversation="handleDeleteConversation"
         @retry-history="historyStore.loadHistory"
-        @logout="shareInfo = 'Authentification non connectée'"
+        @logout="handleLogout"
       />
     </template>
 

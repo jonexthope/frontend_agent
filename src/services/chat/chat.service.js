@@ -14,7 +14,6 @@ export function isSendChatResponse(value) {
 export async function sendChatMessage(payload) {
   const data = {
     question: payload.question,
-    external_id: payload.external_id,
     ...(payload.session_id ? { session_id: payload.session_id } : {}),
   };
 

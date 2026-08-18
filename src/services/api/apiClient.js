@@ -4,9 +4,15 @@ import { AUTH_MESSAGES } from "@/configs/auth.constants";
 import { ApiError, NetworkError } from "@/services/api/apiError";
 
 let tokenProvider = () => null;
+let authRefreshHandler = null;
+let refreshPromise = null;
 
 export function setAuthTokenProvider(provider) {
   tokenProvider = provider;
+}
+
+export function setAuthRefreshHandler(handler) {
+  authRefreshHandler = handler;
 }
 
 function defaultMessageForStatus(status) {
@@ -28,6 +34,20 @@ function defaultMessageForStatus(status) {
   }
 }
 
+async function refreshAuthentication() {
+  if (!authRefreshHandler) {
+    return false;
+  }
+
+  if (!refreshPromise) {
+    refreshPromise = Promise.resolve(authRefreshHandler()).finally(() => {
+      refreshPromise = null;
+    });
+  }
+
+  return refreshPromise;
+}
+
 function createClient() {
   const client = axios.create({
     baseURL: API_CONFIG.baseUrl,
@@ -37,23 +57,55 @@ function createClient() {
 
   client.interceptors.request.use((config) => {
     const token = tokenProvider();
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   });
 
   client.interceptors.response.use(
     (response) => response,
-    (error) => {
+    async (error) => {
+      const status = error.response?.status;
+      const originalRequest = error.config;
+
+      const canAttemptRefresh =
+        status === 401 &&
+        originalRequest &&
+        !originalRequest._authRetry &&
+        !originalRequest.skipAuthRefresh &&
+        authRefreshHandler;
+
+      if (canAttemptRefresh) {
+        originalRequest._authRetry = true;
+
+        try {
+          const refreshed = await refreshAuthentication();
+
+          if (refreshed) {
+            const token = tokenProvider();
+
+            if (token) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
+
+            return client.request(originalRequest);
+          }
+        } catch {
+          // Le traitement standard de l'erreur continue ci-dessous.
+        }
+      }
+
       if (!error.response) {
         if (error.code === "ECONNABORTED") {
           throw new NetworkError("La requête a expiré. Réessayez.");
         }
+
         throw new NetworkError(AUTH_MESSAGES.networkError);
       }
 
-      const status = error.response.status;
       const data = error.response.data;
       const message =
         data?.detail || data?.message || defaultMessageForStatus(status);

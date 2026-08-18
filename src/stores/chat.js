@@ -1,7 +1,6 @@
 import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { sendChatMessage } from "@/services/chat/chat.service";
-import { getChatExternalId } from "@/services/identity/chatIdentity.service";
 import { getChatErrorMessage } from "@/tools/chatErrors";
 
 function createId() {
@@ -62,7 +61,6 @@ export const useChatStore = defineStore("chat", () => {
       const startedAt = performance.now();
       const response = await sendChatMessage({
         question,
-        external_id: getChatExternalId(),
         ...(sessionIdRef ? { session_id: sessionIdRef } : {}),
       });
       const durationMs = Math.round(performance.now() - startedAt);

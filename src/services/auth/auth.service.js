@@ -60,5 +60,19 @@ export async function refreshSession(refreshToken) {
     data: {
       refresh_token: refreshToken,
     },
+    skipAuthRefresh: true,
+  });
+}
+
+export async function logoutSession(refreshToken) {
+  assertAuthEnabled(AUTH_MESSAGES.loginUnavailable);
+
+  return apiRequest({
+    method: "POST",
+    url: AUTH_ENDPOINTS.logout,
+    data: {
+      refresh_token: refreshToken,
+    },
+    skipAuthRefresh: true,
   });
 }

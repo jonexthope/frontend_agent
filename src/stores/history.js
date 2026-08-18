@@ -5,7 +5,6 @@ import {
   getConversation,
   listConversations,
 } from "@/services/chat/history.service";
-import { getChatExternalId } from "@/services/identity/chatIdentity.service";
 import { ApiError, NetworkError } from "@/services/api/apiError";
 import {
   getHistoryStartDate,
@@ -107,7 +106,6 @@ export const useHistoryStore = defineStore("history", () => {
 
     try {
       const response = await listConversations({
-        external_id: getChatExternalId(),
         status: "active",
         date_from: getHistoryStartDate().toISOString(),
         page: 1,

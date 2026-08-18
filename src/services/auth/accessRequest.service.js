@@ -13,9 +13,8 @@ export async function requestAccess(payload) {
     url: AUTH_ENDPOINTS.accessRequest,
     data: {
       email: payload.email.trim(),
-      role: payload.role,
+      requested_role: payload.role,
       message: payload.message.trim(),
-      product: "Cartin AI",
     },
   });
 }
