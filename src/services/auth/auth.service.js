@@ -76,3 +76,20 @@ export async function logoutSession(refreshToken) {
     skipAuthRefresh: true,
   });
 }
+
+export async function register(payload) {
+  assertAuthEnabled(AUTH_MESSAGES.loginUnavailable);
+
+  return apiRequest({
+    method: "POST",
+    url: AUTH_ENDPOINTS.register,
+    data: {
+      email: payload.email,
+      password: payload.password,
+      first_name: payload.first_name,
+      last_name: payload.last_name,
+      display_name: payload.display_name,
+      role: payload.role,
+    },
+  });
+}

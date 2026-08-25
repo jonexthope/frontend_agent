@@ -49,10 +49,10 @@ defineEmits([
 
     <RouterLink
       v-if="authStore.user?.role === 'admin'"
-      to="/admin/access-requests"
-      class="admin-access-link"
-    >
-      Demandes d'accès
+      to="/admin/accounts"
+      class="admin-accounts-link"
+>
+  Gestion des comptes
     </RouterLink>
 
     <UserProfile @logout="$emit('logout')" />

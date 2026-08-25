@@ -4,6 +4,9 @@ import AuthPage from "@/pages/auth/AuthPage.vue";
 import ChatPage from "@/pages/chat/ChatPage.vue";
 import AccessRequestsPage from "@/pages/admin/AccessRequestsPage.vue";
 import { useAuthStore } from "@/stores/auth.js";
+import CreateUserPage from "@/pages/admin/CreateUserPage.vue";
+import AccountManagementPage from "@/pages/admin/AccountManagementPage.vue";
+
 
 const routes = [
   {
@@ -42,8 +45,26 @@ const routes = [
     },
   },
   {
+    path: "/admin/accounts",
+    name: "admin-accounts",
+    component: AccountManagementPage,
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+    },
+  },
+  {
     path: "/:pathMatch(.*)*",
     redirect: APP_ROUTES.login,
+  },
+  {
+    path: "/admin/users/create",
+    name: "admin-create-user",
+    component: CreateUserPage,
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+    },
   },
 ];
 
