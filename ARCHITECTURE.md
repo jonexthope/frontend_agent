@@ -121,7 +121,7 @@ ChatPage (onMounted / refresh après send)
   → history.service.listConversations
   → GET /conversations?external_id&status=active&date_from&page=1&page_size=100
   → tools/conversationPeriods.groupConversationsByPeriod
-  → ConversationHistory (Aujourd’hui / Hier / Cette semaine)
+  → ConversationHistory (Aujourd’hui / Hier / Cette semaine / Ce mois)
 ```
 
 Sélection :
@@ -147,9 +147,9 @@ ConversationItem (menu ⋯)
 
 Règles de période (calendrier local, semaine = lundi) :
 
-- **Aujourd’hui** / **Hier** / **Cette semaine** (hors aujourd’hui/hier)
-- hors fenêtre : non affiché
-- lundi : `date_from = min(début semaine, début hier)` pour inclure le dimanche dans Hier
+- **Aujourd’hui** / **Hier** / **Cette semaine** / **Ce mois** (hors groupes plus récents)
+- hors mois courant : non affiché (sauf débordement semaine/hier en début de mois)
+- `date_from = min(début mois, début semaine, début hier)`
 - `title` liste null → fallback `"Conversation"` (pas de N+1 détail)
 - après ouverture d’une conversation sans titre : enrichissement local depuis la première question
 - limite actuelle : une seule page (`page_size=100`, max backend)

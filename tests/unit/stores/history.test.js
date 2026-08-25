@@ -36,6 +36,7 @@ describe("useHistoryStore", () => {
       today: [],
       yesterday: [],
       thisWeek: [],
+      thisMonth: [],
     });
   });
 
@@ -71,10 +72,10 @@ describe("useHistoryStore", () => {
     expect(store.groupedConversations.today).toHaveLength(1);
     expect(historyService.listConversations).toHaveBeenCalledWith(
       expect.objectContaining({
-        external_id: "frontend-agent-temporary-user",
         status: "active",
         page: 1,
         page_size: 100,
+        date_from: expect.any(String),
       }),
     );
   });

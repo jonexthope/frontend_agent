@@ -21,14 +21,29 @@ export function startOfCurrentWeek(now = new Date()) {
   return d;
 }
 
+/** 1st of the month, 00:00 local. */
+export function startOfCurrentMonth(now = new Date()) {
+  const d = startOfLocalDay(now);
+  d.setDate(1);
+  return d;
+}
+
 /**
- * Earliest date needed for the sidebar window.
- * On Monday, includes previous Sunday (Hier) via min(weekStart, yesterdayStart).
+ * Earliest date needed for the sidebar window (current month).
+ * Also covers week/yesterday when they spill into the previous month
+ * (e.g. early September with Monday still in August).
  */
 export function getHistoryStartDate(now = new Date()) {
+  const monthStart = startOfCurrentMonth(now);
   const weekStart = startOfCurrentWeek(now);
   const yesterdayStart = startOfYesterday(now);
-  return yesterdayStart < weekStart ? yesterdayStart : weekStart;
+  return new Date(
+    Math.min(
+      monthStart.getTime(),
+      weekStart.getTime(),
+      yesterdayStart.getTime(),
+    ),
+  );
 }
 
 function parseActivityDate(item) {
@@ -60,16 +75,23 @@ export function sortByLastActivityDesc(conversations) {
 
 /**
  * Groups conversations for the sidebar. Older items are omitted.
- * @returns {{ today: object[], yesterday: object[], thisWeek: object[] }}
+ * @returns {{
+ *   today: object[],
+ *   yesterday: object[],
+ *   thisWeek: object[],
+ *   thisMonth: object[],
+ * }}
  */
 export function groupConversationsByPeriod(conversations, now = new Date()) {
   const todayAnchor = startOfLocalDay(now);
   const yesterdayAnchor = startOfYesterday(now);
   const weekStart = startOfCurrentWeek(now);
+  const monthStart = startOfCurrentMonth(now);
 
   const today = [];
   const yesterday = [];
   const thisWeek = [];
+  const thisMonth = [];
 
   for (const item of conversations ?? []) {
     const activity = parseActivityDate(item);
@@ -85,6 +107,10 @@ export function groupConversationsByPeriod(conversations, now = new Date()) {
     }
     if (activity >= weekStart) {
       thisWeek.push(item);
+      continue;
+    }
+    if (activity >= monthStart) {
+      thisMonth.push(item);
     }
   }
 
@@ -92,5 +118,6 @@ export function groupConversationsByPeriod(conversations, now = new Date()) {
     today: sortByLastActivityDesc(today),
     yesterday: sortByLastActivityDesc(yesterday),
     thisWeek: sortByLastActivityDesc(thisWeek),
+    thisMonth: sortByLastActivityDesc(thisMonth),
   };
 }

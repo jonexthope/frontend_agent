@@ -35,7 +35,8 @@ const emit = defineEmits(["select-conversation", "retry", "delete-conversation"]
 const hasAnyConversation = () =>
   (props.groups?.today?.length ?? 0) > 0 ||
   (props.groups?.yesterday?.length ?? 0) > 0 ||
-  (props.groups?.thisWeek?.length ?? 0) > 0;
+  (props.groups?.thisWeek?.length ?? 0) > 0 ||
+  (props.groups?.thisMonth?.length ?? 0) > 0;
 
 const pendingDeleteId = ref(null);
 const isDeletingPending = computed(
@@ -86,7 +87,7 @@ watch(
 
     <template v-else-if="!hasAnyConversation()">
       <div class="chat-hist-label">Conversations</div>
-      <p class="chat-hist-empty">Aucune conversation récente.</p>
+      <p class="chat-hist-empty">Aucune conversation ce mois-ci.</p>
     </template>
 
     <template v-else>
@@ -113,6 +114,15 @@ watch(
         v-if="groups.thisWeek.length"
         label="Cette semaine"
         :conversations="groups.thisWeek"
+        :active-conversation-id="activeConversationId ?? ''"
+        :deleting-conversation-id="deletingConversationId"
+        @select-conversation="$emit('select-conversation', $event)"
+        @request-delete="openDeleteConfirmation"
+      />
+      <ConversationGroup
+        v-if="groups.thisMonth?.length"
+        label="Ce mois"
+        :conversations="groups.thisMonth"
         :active-conversation-id="activeConversationId ?? ''"
         :deleting-conversation-id="deletingConversationId"
         @select-conversation="$emit('select-conversation', $event)"

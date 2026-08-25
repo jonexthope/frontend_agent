@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   getHistoryStartDate,
   groupConversationsByPeriod,
+  startOfCurrentMonth,
   startOfCurrentWeek,
   startOfLocalDay,
   startOfYesterday,
@@ -33,6 +34,7 @@ describe("conversationPeriods", () => {
     expect(groups.today.map((c) => c.id)).toEqual(["t1"]);
     expect(groups.yesterday).toEqual([]);
     expect(groups.thisWeek).toEqual([]);
+    expect(groups.thisMonth).toEqual([]);
   });
 
   it("places a conversation from yesterday in yesterday", () => {
@@ -52,16 +54,27 @@ describe("conversationPeriods", () => {
     expect(groups.thisWeek.map((c) => c.id)).toEqual(["w1"]);
     expect(groups.today).toEqual([]);
     expect(groups.yesterday).toEqual([]);
+    expect(groups.thisMonth).toEqual([]);
   });
 
-  it("excludes conversations from the previous week", () => {
+  it("places an earlier month conversation in thisMonth", () => {
     const items = [
-      conversation("old", isoAtLocal(2026, 6, 29, 12)), // previous Wednesday
+      conversation("m1", isoAtLocal(2026, 7, 1, 12)), // Saturday Aug 1, before week
+    ];
+    const groups = groupConversationsByPeriod(items, wednesday);
+    expect(groups.thisMonth.map((c) => c.id)).toEqual(["m1"]);
+    expect(groups.thisWeek).toEqual([]);
+  });
+
+  it("excludes conversations from the previous month", () => {
+    const items = [
+      conversation("old", isoAtLocal(2026, 6, 29, 12)), // July 29
     ];
     const groups = groupConversationsByPeriod(items, wednesday);
     expect(groups.today).toEqual([]);
     expect(groups.yesterday).toEqual([]);
     expect(groups.thisWeek).toEqual([]);
+    expect(groups.thisMonth).toEqual([]);
   });
 
   it("on Monday, previous Sunday goes to yesterday", () => {
@@ -89,6 +102,18 @@ describe("conversationPeriods", () => {
     expect(groups.thisWeek.map((c) => c.id)).toEqual(["fri"]);
   });
 
+  it("keeps early-week days from previous month in thisWeek", () => {
+    const wednesdaySep = new Date(2026, 8, 2, 12, 0, 0, 0); // Wed Sep 2
+    const items = [
+      conversation("aug31", isoAtLocal(2026, 7, 31, 10)), // Mon Aug 31
+      conversation("sep1", isoAtLocal(2026, 8, 1, 10)), // Tue Sep 1 → yesterday
+    ];
+    const groups = groupConversationsByPeriod(items, wednesdaySep);
+    expect(groups.thisWeek.map((c) => c.id)).toEqual(["aug31"]);
+    expect(groups.yesterday.map((c) => c.id)).toEqual(["sep1"]);
+    expect(groups.thisMonth).toEqual([]);
+  });
+
   it("ignores invalid activity dates", () => {
     const items = [
       conversation("bad", "not-a-date"),
@@ -110,19 +135,35 @@ describe("conversationPeriods", () => {
 
   it("returns empty groups when there are no conversations", () => {
     const groups = groupConversationsByPeriod([], wednesday);
-    expect(groups).toEqual({ today: [], yesterday: [], thisWeek: [] });
+    expect(groups).toEqual({
+      today: [],
+      yesterday: [],
+      thisWeek: [],
+      thisMonth: [],
+    });
   });
 
-  it("getHistoryStartDate on Monday returns previous Sunday start", () => {
+  it("getHistoryStartDate returns start of current month mid-month", () => {
+    const start = getHistoryStartDate(wednesday);
+    expect(start.getTime()).toBe(startOfCurrentMonth(wednesday).getTime());
+    expect(start.getTime()).toBe(startOfLocalDay(new Date(2026, 7, 1)).getTime());
+  });
+
+  it("getHistoryStartDate spans previous month when week starts earlier", () => {
+    const wednesdaySep = new Date(2026, 8, 2, 15, 30, 0, 0);
+    const start = getHistoryStartDate(wednesdaySep);
+    expect(start.getTime()).toBe(startOfCurrentWeek(wednesdaySep).getTime());
+    expect(start.getTime()).toBeLessThan(
+      startOfCurrentMonth(wednesdaySep).getTime(),
+    );
+  });
+
+  it("getHistoryStartDate on Monday includes previous Sunday when needed", () => {
     const monday = new Date(2026, 7, 3, 15, 30, 0, 0);
     const start = getHistoryStartDate(monday);
-    expect(start.getTime()).toBe(startOfYesterday(monday).getTime());
-    expect(start.getTime()).toBeLessThan(startOfCurrentWeek(monday).getTime());
-  });
-
-  it("getHistoryStartDate mid-week returns Monday start", () => {
-    const start = getHistoryStartDate(wednesday);
-    expect(start.getTime()).toBe(startOfCurrentWeek(wednesday).getTime());
-    expect(start.getTime()).toBe(startOfLocalDay(new Date(2026, 7, 3)).getTime());
+    expect(start.getTime()).toBe(startOfCurrentMonth(monday).getTime());
+    expect(start.getTime()).toBeLessThanOrEqual(
+      startOfYesterday(monday).getTime(),
+    );
   });
 });

@@ -76,6 +76,6 @@ Voir `ARCHITECTURE.md` et `docs/frontend-chat-contract.md`.
 |---|---|
 | UI chat + `POST /chat` | ✅ |
 | `session_id` / `interaction_id` | ✅ |
-| Historique `/conversations` (Aujourd’hui / Hier / Cette semaine) | ✅ |
+| Historique `/conversations` (Aujourd’hui / Hier / Cette semaine / Ce mois) | ✅ |
 | UI auth (sans JWT réel) | ✅ |
 | Feedback / JWT / streaming | ❌ hors périmètre actuel |

@@ -30,7 +30,7 @@ Appelé via `history.service.listConversations` avec :
 |---|---|
 | `external_id` | `getChatExternalId()` (même identité que `/chat`) |
 | `status` | `active` |
-| `date_from` | `getHistoryStartDate().toISOString()` (min lundi / début hier) |
+| `date_from` | `getHistoryStartDate().toISOString()` (min début mois / lundi / hier) |
 | `page` | `1` |
 | `page_size` | `100` (max backend) |
 
@@ -41,8 +41,9 @@ Groupement UI (`conversationPeriods.js`) sur **`last_activity_at`**, fuseau **lo
 - Aujourd’hui
 - Hier
 - Cette semaine (depuis lundi, hors aujourd’hui/hier)
+- Ce mois (depuis le 1er, hors aujourd’hui/hier/cette semaine)
 
-Conversations plus anciennes : non affichées. `title` null en liste → fallback `"Conversation"` sans appel N+1.
+Conversations plus anciennes que le mois (hors débordement semaine) : non affichées. `title` null en liste → fallback `"Conversation"` sans appel N+1.
 
 Limite : une page uniquement ; si `total > page_size`, des items peuvent manquer.
 

@@ -1,5 +1,8 @@
 # Journal technique — cartin_ai_frontend
 
+### 2026-08-25
+Sidebar historique élargie au mois courant : `date_from` = min(début mois, début semaine, hier), groupe UI **Ce mois** en plus de Aujourd’hui / Hier / Cette semaine ; docs et tests unitaires alignés.
+
 ### 2026-08-11
 Sidebar historique enrichie : menu `⋯` par conversation, confirmation de suppression, suppression logique via `PATCH /conversations/{session_id}` (`status=archived`) avec retrait local immédiat et reset du chat si conversation active ; UI des lignes de conversation rendue plus compacte ; fallback liste `title=null` → `Conversation` et enrichissement local depuis la première question lors de l’ouverture ; tests unit/intégration mis à jour.
 
