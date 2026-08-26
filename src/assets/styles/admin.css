@@ -1,0 +1,254 @@
+/* Account management hub */
+.account-management-page {
+  min-height: 100vh;
+  padding: 32px;
+  background: #f8fafc;
+}
+
+.account-management-page .page-header {
+  margin-bottom: 24px;
+}
+
+.account-management-page .page-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.account-management-page .page-header p {
+  margin-top: 8px;
+  color: #64748b;
+}
+
+.account-management-page .tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.account-management-page .tabs button {
+  padding: 10px 16px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.account-management-page .tabs button.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.account-management-page .tab-content {
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+/* Access requests */
+.access-requests-page {
+  padding: 24px;
+}
+
+.access-requests-page .page-header {
+  margin-bottom: 24px;
+}
+
+.access-requests-page .page-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.access-requests-page .page-header p {
+  margin-top: 6px;
+  color: #666;
+}
+
+.access-requests-page .requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.access-requests-page .request-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.access-requests-page .request-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.access-requests-page .request-info span,
+.access-requests-page .request-info small {
+  color: #666;
+}
+
+.access-requests-page .request-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.access-requests-page .request-actions button {
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.access-requests-page .approve-button {
+  background: #16a34a;
+  color: white;
+}
+
+.access-requests-page .reject-button {
+  background: #dc2626;
+  color: white;
+}
+
+.access-requests-page .error-message {
+  color: #dc2626;
+}
+
+/* Create user */
+.create-user-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: #f8fafc;
+}
+
+.create-user-page .create-user-card {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.create-user-page .page-header {
+  margin-bottom: 28px;
+}
+
+.create-user-page .page-header h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.create-user-page .page-header p {
+  margin: 8px 0 0;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.create-user-page .user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.create-user-page .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.create-user-page .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.create-user-page .form-group label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.create-user-page .form-group input,
+.create-user-page .form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  font: inherit;
+}
+
+.create-user-page .form-group input:focus,
+.create-user-page .form-group select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.create-user-page .form-group small {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.create-user-page .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.create-user-page .form-actions button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.create-user-page .form-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.create-user-page .primary-button {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.create-user-page .secondary-button {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.create-user-page .message {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.create-user-page .error-message {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.create-user-page .success-message {
+  background: #dcfce7;
+  color: #166534;
+}
+
+@media (max-width: 640px) {
+  .create-user-page .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .create-user-page .create-user-card {
+    padding: 20px;
+  }
+}

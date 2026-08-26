@@ -1,5 +1,8 @@
 # Journal technique — cartin_ai_frontend
 
+### 2026-08-26
+Styles admin extraits vers `assets/styles/admin.css` (import dans `main.js`) ; retrait des `<style scoped>` des pages admin et correction des fences Markdown invalides dans `CreateUserPage.vue`.
+
 ### 2026-08-25
 Sidebar historique élargie au mois courant : `date_from` = min(début mois, début semaine, hier), groupe UI **Ce mois** en plus de Aujourd’hui / Hier / Cette semaine ; docs et tests unitaires alignés.
 

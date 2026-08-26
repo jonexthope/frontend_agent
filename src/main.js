@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/auth.js";
 import "./assets/styles/global.css";
 import "./assets/styles/auth.css";
 import "./assets/styles/chat.css";
+import "./assets/styles/admin.css";
 
 async function bootstrap() {
   const app = createApp(App);

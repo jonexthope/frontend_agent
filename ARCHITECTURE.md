@@ -9,13 +9,14 @@ src/
 ├── App.vue
 ├── main.js
 ├── assets/styles/              # unique emplacement des styles applicatifs
+│   ├── global.css, auth.css, chat.css, admin.css
 ├── components/{auth,chat,common}/
 ├── composables/chat/           # logique réutilisable de composition
 ├── configs/                    # API, routes et constantes applicatives
 ├── constants/
 ├── layouts/
 ├── mocks/
-├── pages/{auth,chat}/           # écrans routés
+├── pages/{auth,chat,admin}/     # écrans routés
 ├── router/
 ├── services/{api,auth,chat,identity}/
 ├── stores/                     # état Pinia auth, chat, history et UI
@@ -29,8 +30,9 @@ tests/
 
 ## Responsabilités
 
-- `main.js` initialise Vue, Pinia, le routeur et les styles partagés.
-- `pages` assemble les écrans routés (`AuthPage` et `ChatPage`).
+- `main.js` initialise Vue, Pinia, le routeur et les styles partagés (`global`, `auth`, `chat`, `admin`).
+- `pages` assemble les écrans routés (`AuthPage`, `ChatPage`, pages admin).
+- Les styles des pages admin (`AccountManagementPage`, `AccessRequestsPage`, `CreateUserPage`) vivent dans `assets/styles/admin.css` (pas de `<style scoped>` sur ces écrans).
 - `router/index.js` est l’unique routeur et réutilise `configs/routes.config.js`.
 - `layouts` définissent la structure des écrans auth et chat.
 - `components` contient les composants Vue par domaine.
